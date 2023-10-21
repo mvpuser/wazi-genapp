@@ -1,0 +1,2134 @@
+apiVersion: deploy.ibm.com/v1
+kind: Evidence
+metadata:
+  annotations:
+    creation_timestamp: 20230928.113512.333
+    engine:
+      build: '1430'
+      date: Thu Aug 24 09:24:59 UTC 2023
+      version: 0.10.0
+    package:
+      path: /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+      sha256: 4989de68558017a51c42114e591edc79c34e02b42bbad8db4cd894caabd483d9
+    environment_name: zos_host_01
+    deploy_timestamp: 20230928.113519.803
+    inventory_hostname: zos_host_01
+    ansible_host: 9.30.222.103
+    smf_record:
+      status: Ok
+  description: cics-genapp
+  name: cics-genapp
+  version: 1.0.14
+status: Ok
+activities:
+- name: PACKAGE
+  actions:
+  - name: PACKAGE
+    steps:
+    - name: PACKAGE
+      step_result:
+        status: Ok
+        msg: 'package.yml : Ok'
+        results:
+        - status: Skipped
+          msg: 'package.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy : [{{current_step_name}}]:
+            Set the package location'
+          results:
+            register: None
+            args:
+              wd_package_file: '{{ wd_deployment_plan.metadata.annotations.package.path
+                if wd_deployment_plan.metadata.annotations.package is defined else
+                None }}'
+            result:
+              skip_reason: Conditional result was False
+        - status: Ok
+          msg: 'package.yml line 20 : ibm.ibm_zos_wazi_deploy.zos_deploy : [package>package>package]:
+            Check if /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+            exists'
+          results:
+            register: wd_payload_st
+            args:
+              checksum_algorithm: sha256
+              path: /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+            result:
+              invocation:
+                module_args:
+                  checksum_algorithm: sha256
+                  follow: false
+                  get_attributes: true
+                  get_checksum: true
+                  get_md5: false
+                  get_mime: true
+                  path: /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+              stat:
+                atime: 1695900912.942188
+                attr_flags: ''
+                attributes: []
+                block_size: 4096
+                blocks: 160
+                charset: binary
+                checksum: 4989de68558017a51c42114e591edc79c34e02b42bbad8db4cd894caabd483d9
+                ctime: 1695900912.941188
+                dev: 64768
+                device_type: 0
+                executable: false
+                exists: true
+                gid: 984
+                gr_name: jenkins
+                inode: 269067892
+                isblk: false
+                ischr: false
+                isdir: false
+                isfifo: false
+                isgid: false
+                islnk: false
+                isreg: true
+                issock: false
+                isuid: false
+                mimetype: application/x-tar
+                mode: '0644'
+                mtime: 1695900912.941188
+                nlink: 1
+                path: /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+                pw_name: jenkins
+                readable: true
+                rgrp: true
+                roth: true
+                rusr: true
+                size: 81920
+                uid: 988
+                version: '3615526628'
+                wgrp: false
+                woth: false
+                writeable: true
+                wusr: true
+                xgrp: false
+                xoth: false
+                xusr: false
+        - status: Ok
+          msg: 'package.yml line 27 : ibm.ibm_zos_wazi_deploy.zos_deploy : [package>package>package]:
+            Verify the deployment plan package section /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar'
+          results:
+            register: None
+            args:
+              msg: The deployment plan package section is not resent in the deployment
+                plan!!
+            result:
+              failed_when_result: false
+              msg: The deployment plan package section is not resent in the deployment
+                plan!!
+        - status: Ok
+          msg: 'package.yml line 34 : ibm.ibm_zos_wazi_deploy.zos_deploy : [package>package>package]:
+            Verify the checksum of the package /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar'
+          results:
+            register: None
+            args:
+              msg: The current package checksum 4989de68558017a51c42114e591edc79c34e02b42bbad8db4cd894caabd483d9
+                differ from the checksum in the deployment plan 4989de68558017a51c42114e591edc79c34e02b42bbad8db4cd894caabd483d9
+            result:
+              failed_when_result: false
+              msg: The current package checksum 4989de68558017a51c42114e591edc79c34e02b42bbad8db4cd894caabd483d9
+                differ from the checksum in the deployment plan 4989de68558017a51c42114e591edc79c34e02b42bbad8db4cd894caabd483d9
+        - status: Ok
+          msg: 'package.yml line 41 : ibm.ibm_zos_wazi_deploy.zos_deploy : [package>package>package]:
+            Send /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+            to USS: /tmp/wd_deploy/jenkins/zos_host_01'
+          results:
+            register: None
+            args:
+              dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv
+              src: /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar
+            result:
+              checksum: a5142d59ab5dad58c5db98d78a860172d8d036f2
+              dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/package.tar
+              diff: []
+              gid: 100
+              group: OMVS
+              invocation:
+                module_args:
+                  _original_basename: package.tar
+                  backup: false
+                  checksum: a5142d59ab5dad58c5db98d78a860172d8d036f2
+                  dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv
+                  follow: false
+                  force: true
+                  src: /u/jenkins/.ansible/tmp/ansible-tmp-1695900935.2114155-1999322-39354625367257/source
+                  unsafe_writes: false
+              md5sum: 857d0c3ae5840cc5801f3ed88675fbf7
+              mode: '0644'
+              owner: JENKINS
+              size: 81920
+              src: /u/jenkins/.ansible/tmp/ansible-tmp-1695900935.2114155-1999322-39354625367257/source
+              state: file
+              uid: 10030
+        - status: Ok
+          msg: 'package.yml line 47 : ibm.ibm_zos_wazi_deploy.zos_deploy : [package>package>package]:
+            Extract /var/lib/jenkins/workspace/GENAPP_WD_CONTINUOUS_DEPLOYMENT_PROJECT/BUILD-12/package.tar'
+          results:
+            register: None
+            args:
+              _raw_params: |-
+                set +e
+                tar -C /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv -xf /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/*.tar -L T 2>/tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log
+                if [ $(grep -v "cannot set uid.gid" /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log | wc -w) -eq 0 ]
+                then
+                   chtag -r $(find /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv -type f)
+                   exit 0
+                else
+                   cat /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log | iconv -f ibm-1047 -t utf-8
+                   exit -1
+                fi
+              _uses_shell: true
+            result:
+              cmd: |-
+                set +e
+                tar -C /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv -xf /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/*.tar -L T 2>/tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log
+                if [ $(grep -v "cannot set uid.gid" /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log | wc -w) -eq 0 ]
+                then
+                   chtag -r $(find /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv -type f)
+                   exit 0
+                else
+                   cat /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log | iconv -f ibm-1047 -t utf-8
+                   exit -1
+                fi
+              delta: '0:00:00.178076'
+              end: '2023-09-28 07:35:39.220853'
+              invocation:
+                module_args:
+                  _raw_params: |-
+                    set +e
+                    tar -C /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv -xf /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/*.tar -L T 2>/tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log
+                    if [ $(grep -v "cannot set uid.gid" /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log | wc -w) -eq 0 ]
+                    then
+                       chtag -r $(find /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv -type f)
+                       exit 0
+                    else
+                       cat /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/zos_host_01.tar.log | iconv -f ibm-1047 -t utf-8
+                       exit -1
+                    fi
+                  _uses_shell: true
+                  stdin_add_newline: true
+                  strip_empty_ends: true
+                  warn: false
+              msg: ''
+              rc: 0
+              start: '2023-09-28 07:35:39.042777'
+              stderr: ''
+              stderr_lines: []
+              stdout: ''
+              stdout_lines: []
+- name: DEPLOY_MODULES
+  properties:
+  - key: my_activity_prop
+    value: my_value
+  actions:
+  - name: UPDATE
+    properties:
+    - key: my_action_prop
+      value: my_value
+    steps:
+    - name: MEMBER_VALIDATE
+      artifacts:
+      - hash: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+        - key: fingerprint
+          value: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        - key: old_fingerprint
+          value: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+        - key: type
+          value: DBRM
+      - hash: c65d96aea64b1d837b32b0312d087921067aca16543c7089c5a7e9f517cbf9ff
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+        - key: fingerprint
+          value: 5695PMB01 02042023271073326
+        - key: old_fingerprint
+          value: 5695PMB01 02042023271055204
+        - key: type
+          value: CICSLOAD
+      step_result:
+        status: Skipped
+        msg: Conditional result was False
+        results: []
+    - name: MEMBER_ARCHIVE
+      artifacts:
+      - hash: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+        - key: fingerprint
+          value: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        - key: old_fingerprint
+          value: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+        - key: type
+          value: DBRM
+      - hash: c65d96aea64b1d837b32b0312d087921067aca16543c7089c5a7e9f517cbf9ff
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+        - key: fingerprint
+          value: 5695PMB01 02042023271073326
+        - key: old_fingerprint
+          value: 5695PMB01 02042023271055204
+        - key: type
+          value: CICSLOAD
+      step_result:
+        status: Ok
+        msg: 'member_archive.yml : Ok'
+        results:
+        - status: Ok
+          msg: 'member_archive.yml line 13 : ibm.ibm_zos_wazi_deploy.zos_deploy :
+            set_fact'
+          results:
+            register: None
+            args:
+              wd_backup_list_items:
+              - dest: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)
+                fingerprint: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+                is_binary: true
+                is_load: false
+                is_sequential: false
+                is_uss: false
+                name: LGACDB02
+                src: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+                type:
+                  copy_by_folder: true
+                  db2_systems:
+                  - package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  is_binary: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                    name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                    spec:
+                      record_format: FB
+                      record_length: 80
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: dbrm
+              - dest: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)
+                fingerprint: 5695PMB01 02042023271055204
+                is_binary: true
+                is_load: true
+                is_sequential: false
+                is_uss: false
+                name: LGACDB02
+                src: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+                type:
+                  cics_systems:
+                  - cmci_host: 9.30.222.103
+                    cmci_password: '***'
+                    cmci_port: 1490
+                    cmci_user: JENKINS
+                    context: CICS01
+                    csd_group: GENASAP
+                    insecure: true
+                    scheme: http
+                  copy_by_folder: true
+                  is_load: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                    name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                    spec:
+                      record_format: U
+                      record_length: 0
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: cicsload
+            result:
+              ansible_facts:
+                wd_backup_list_items:
+                - dest: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)
+                  fingerprint: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+                  is_binary: true
+                  is_load: false
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+                  type:
+                    copy_by_folder: true
+                    db2_systems:
+                    - package: GENASA1
+                      package_action: REPLACE
+                      package_job_max_rc: 4
+                      package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan: GENAONE
+                      plan_action: REPLACE
+                      plan_job_max_rc: 4
+                      plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan_pklist: '*.GENASA1.*'
+                      qualifier: GENADB0
+                      sdsnload: DSN.V12R1M0.SDSNLOAD
+                      sqlid: JENKINS
+                      subsys: DBC1
+                    is_binary: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                      name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                      spec:
+                        record_format: FB
+                        record_length: 80
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: dbrm
+                - dest: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)
+                  fingerprint: 5695PMB01 02042023271055204
+                  is_binary: true
+                  is_load: true
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+                  type:
+                    cics_systems:
+                    - cmci_host: 9.30.222.103
+                      cmci_password: '***'
+                      cmci_port: 1490
+                      cmci_user: JENKINS
+                      context: CICS01
+                      csd_group: GENASAP
+                      insecure: true
+                      scheme: http
+                    copy_by_folder: true
+                    is_load: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                      name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                      spec:
+                        record_format: U
+                        record_length: 0
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: cicsload
+        - status: Ok
+          msg: 'member_archive.yml line 19 : ibm.ibm_zos_wazi_deploy.zos_deploy :
+            [{{current_step_name}}]: Copy the member(s) to backup PDS(s)'
+          results:
+            register: None
+            args:
+              _raw_params: task_zos_copy.yml
+            result:
+              msg: All items completed
+              results:
+              - ansible_loop_var: item
+                include: task_zos_copy.yml
+                include_args: {}
+                item:
+                  dest: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)
+                  fingerprint: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+                  is_binary: true
+                  is_load: false
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+                  type:
+                    copy_by_folder: true
+                    db2_systems:
+                    - package: GENASA1
+                      package_action: REPLACE
+                      package_job_max_rc: 4
+                      package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan: GENAONE
+                      plan_action: REPLACE
+                      plan_job_max_rc: 4
+                      plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan_pklist: '*.GENASA1.*'
+                      qualifier: GENADB0
+                      sdsnload: DSN.V12R1M0.SDSNLOAD
+                      sqlid: JENKINS
+                      subsys: DBC1
+                    is_binary: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                      name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                      spec:
+                        record_format: FB
+                        record_length: 80
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: dbrm
+              - ansible_loop_var: item
+                include: task_zos_copy.yml
+                include_args: {}
+                item:
+                  dest: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)
+                  fingerprint: 5695PMB01 02042023271055204
+                  is_binary: true
+                  is_load: true
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+                  type:
+                    cics_systems:
+                    - cmci_host: 9.30.222.103
+                      cmci_password: '***'
+                      cmci_port: 1490
+                      cmci_user: JENKINS
+                      context: CICS01
+                      csd_group: GENASAP
+                      insecure: true
+                      scheme: http
+                    copy_by_folder: true
+                    is_load: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                      name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                      spec:
+                        record_format: U
+                        record_length: 0
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: cicsload
+        - status: Ok
+          msg: 'task_zos_copy.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_copy.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy : [deploy_modules>update>member_archive]:
+            Copy NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02) to NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)'
+          results:
+            register: wd_zos_module_result
+            args:
+              backup: false
+              dest: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)
+              force: true
+              is_binary: true
+              remote_src: true
+              src: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+            result:
+              dest: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)
+              failed_when_result: false
+              invocation:
+                module_args:
+                  backup: false
+                  dest: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM(LGACDB02)
+                  force: true
+                  is_binary: true
+                  remote_src: true
+                  src: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+              is_binary: true
+              src: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+        - status: Ok
+          msg: 'task_zos_copy.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_copy.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy : [deploy_modules>update>member_archive]:
+            Copy NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02) to NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)'
+          results:
+            register: wd_zos_module_result
+            args:
+              backup: false
+              dest: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)
+              force: true
+              is_binary: true
+              remote_src: true
+              src: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+            result:
+              dest: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)
+              failed_when_result: false
+              invocation:
+                module_args:
+                  backup: false
+                  dest: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB(LGACDB02)
+                  force: true
+                  is_binary: true
+                  remote_src: true
+                  src: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+              is_binary: true
+              src: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+    - name: MEMBER_COPY
+      artifacts:
+      - hash: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+        - key: fingerprint
+          value: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        - key: old_fingerprint
+          value: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+        - key: type
+          value: DBRM
+      - hash: c65d96aea64b1d837b32b0312d087921067aca16543c7089c5a7e9f517cbf9ff
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+        - key: fingerprint
+          value: 5695PMB01 02042023271073326
+        - key: old_fingerprint
+          value: 5695PMB01 02042023271055204
+        - key: type
+          value: CICSLOAD
+      step_result:
+        status: Ok
+        msg: 'member_copy.yml : Ok'
+        results:
+        - status: Ok
+          msg: 'member_copy.yml line 13 : ibm.ibm_zos_wazi_deploy.zos_deploy : set_fact'
+          results:
+            register: None
+            args:
+              wd_copy_list_directories:
+              - dest: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                is_binary: true
+                src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+              - dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                is_binary: true
+                src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+              wd_copy_list_items:
+              - dest: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+                fingerprint: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+                is_binary: true
+                is_load: false
+                is_sequential: false
+                is_uss: false
+                name: LGACDB02
+                src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+                type:
+                  copy_by_folder: true
+                  db2_systems:
+                  - package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  is_binary: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                    name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                    spec:
+                      record_format: FB
+                      record_length: 80
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: dbrm
+              - dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+                fingerprint: 5695PMB01 02042023271055204
+                is_binary: true
+                is_load: true
+                is_sequential: false
+                is_uss: false
+                name: LGACDB02
+                src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+                type:
+                  cics_systems:
+                  - cmci_host: 9.30.222.103
+                    cmci_password: '***'
+                    cmci_port: 1490
+                    cmci_user: JENKINS
+                    context: CICS01
+                    csd_group: GENASAP
+                    insecure: true
+                    scheme: http
+                  copy_by_folder: true
+                  is_load: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                    name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                    spec:
+                      record_format: U
+                      record_length: 0
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: cicsload
+              wd_copy_list_types:
+              - copy_by_folder: true
+                db2_systems:
+                - package: GENASA1
+                  package_action: REPLACE
+                  package_job_max_rc: 4
+                  package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                  plan: GENAONE
+                  plan_action: REPLACE
+                  plan_job_max_rc: 4
+                  plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                  plan_pklist: '*.GENASA1.*'
+                  qualifier: GENADB0
+                  sdsnload: DSN.V12R1M0.SDSNLOAD
+                  sqlid: JENKINS
+                  subsys: DBC1
+                is_binary: true
+                pds:
+                  backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                  name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                  spec:
+                    record_format: FB
+                    record_length: 80
+                    space_primary: 10
+                    space_secondary: 20
+                    space_type: CYL
+                    type: LIBRARY
+                type: dbrm
+              - cics_systems:
+                - cmci_host: 9.30.222.103
+                  cmci_password: '***'
+                  cmci_port: 1490
+                  cmci_user: JENKINS
+                  context: CICS01
+                  csd_group: GENASAP
+                  insecure: true
+                  scheme: http
+                copy_by_folder: true
+                is_load: true
+                pds:
+                  backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                  name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                  spec:
+                    record_format: U
+                    record_length: 0
+                    space_primary: 10
+                    space_secondary: 20
+                    space_type: CYL
+                    type: LIBRARY
+                type: cicsload
+            result:
+              ansible_facts:
+                wd_copy_list_directories:
+                - dest: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                  is_binary: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+                - dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                  is_binary: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+                wd_copy_list_items:
+                - dest: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+                  fingerprint: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+                  is_binary: true
+                  is_load: false
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+                  type:
+                    copy_by_folder: true
+                    db2_systems:
+                    - package: GENASA1
+                      package_action: REPLACE
+                      package_job_max_rc: 4
+                      package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan: GENAONE
+                      plan_action: REPLACE
+                      plan_job_max_rc: 4
+                      plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan_pklist: '*.GENASA1.*'
+                      qualifier: GENADB0
+                      sdsnload: DSN.V12R1M0.SDSNLOAD
+                      sqlid: JENKINS
+                      subsys: DBC1
+                    is_binary: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                      name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                      spec:
+                        record_format: FB
+                        record_length: 80
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: dbrm
+                - dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+                  fingerprint: 5695PMB01 02042023271055204
+                  is_binary: true
+                  is_load: true
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+                  type:
+                    cics_systems:
+                    - cmci_host: 9.30.222.103
+                      cmci_password: '***'
+                      cmci_port: 1490
+                      cmci_user: JENKINS
+                      context: CICS01
+                      csd_group: GENASAP
+                      insecure: true
+                      scheme: http
+                    copy_by_folder: true
+                    is_load: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                      name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                      spec:
+                        record_format: U
+                        record_length: 0
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: cicsload
+                wd_copy_list_types:
+                - copy_by_folder: true
+                  db2_systems:
+                  - package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  is_binary: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                    name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                    spec:
+                      record_format: FB
+                      record_length: 80
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: dbrm
+                - cics_systems:
+                  - cmci_host: 9.30.222.103
+                    cmci_password: '***'
+                    cmci_port: 1490
+                    cmci_user: JENKINS
+                    context: CICS01
+                    csd_group: GENASAP
+                    insecure: true
+                    scheme: http
+                  copy_by_folder: true
+                  is_load: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                    name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                    spec:
+                      record_format: U
+                      record_length: 0
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: cicsload
+        - status: Ok
+          msg: 'member_copy.yml line 21 : ibm.ibm_zos_wazi_deploy.zos_deploy : [{{current_step_name}}]:
+            Create destination PDS(s)'
+          results:
+            register: None
+            args:
+              _raw_params: task_zos_data_set.yml
+            result:
+              msg: All items completed
+              results:
+              - ansible_loop_var: wd_type
+                include: task_zos_data_set.yml
+                include_args: {}
+                wd_type:
+                  copy_by_folder: true
+                  db2_systems:
+                  - package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  is_binary: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                    name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                    spec:
+                      record_format: FB
+                      record_length: 80
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: dbrm
+              - ansible_loop_var: wd_type
+                include: task_zos_data_set.yml
+                include_args: {}
+                wd_type:
+                  cics_systems:
+                  - cmci_host: 9.30.222.103
+                    cmci_password: '***'
+                    cmci_port: 1490
+                    cmci_user: JENKINS
+                    context: CICS01
+                    csd_group: GENASAP
+                    insecure: true
+                    scheme: http
+                  copy_by_folder: true
+                  is_load: true
+                  pds:
+                    backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                    name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                    spec:
+                      record_format: U
+                      record_length: 0
+                      space_primary: 10
+                      space_secondary: 20
+                      space_type: CYL
+                      type: LIBRARY
+                  type: cicsload
+        - status: Ok
+          msg: 'task_zos_data_set.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_data_set.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [deploy_modules>update>member_copy]: Manage data set NAZARE.WDEPLOY.ANSIBLE.DBRM'
+          results:
+            register: wd_zos_module_result
+            args:
+              name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+              record_format: FB
+              record_length: '80'
+              space_primary: '10'
+              space_secondary: '20'
+              space_type: CYL
+              type: LIBRARY
+            result:
+              invocation:
+                module_args:
+                  force: false
+                  name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                  record_format: FB
+                  record_length: 80
+                  replace: false
+                  space_primary: '10'
+                  space_secondary: 20
+                  space_type: CYL
+                  state: present
+                  type: LIBRARY
+              message: ''
+              names:
+              - NAZARE.WDEPLOY.ANSIBLE.DBRM
+        - status: Ok
+          msg: 'task_zos_data_set.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_data_set.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [deploy_modules>update>member_copy]: Manage data set NAZARE.WDEPLOY.ANSIBLE.LOADLIB'
+          results:
+            register: wd_zos_module_result
+            args:
+              name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+              record_format: U
+              record_length: '0'
+              space_primary: '10'
+              space_secondary: '20'
+              space_type: CYL
+              type: LIBRARY
+            result:
+              invocation:
+                module_args:
+                  force: false
+                  name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                  record_format: U
+                  record_length: 0
+                  replace: false
+                  space_primary: '10'
+                  space_secondary: 20
+                  space_type: CYL
+                  state: present
+                  type: LIBRARY
+              message: ''
+              names:
+              - NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+        - status: Skipped
+          msg: 'member_copy.yml line 39 : ibm.ibm_zos_wazi_deploy.zos_deploy : [{{current_step_name}}]:
+            Copy the member(s) to destination PDS(s)'
+          results:
+            register: None
+            args:
+              _raw_params: task_zos_copy.yml
+            result:
+              msg: All items skipped
+              results:
+              - ansible_loop_var: item
+                changed: false
+                item:
+                  dest: NAZARE.WDEPLOY.ANSIBLE.DBRM(LGACDB02)
+                  fingerprint: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+                  is_binary: true
+                  is_load: false
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+                  type:
+                    copy_by_folder: true
+                    db2_systems:
+                    - package: GENASA1
+                      package_action: REPLACE
+                      package_job_max_rc: 4
+                      package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan: GENAONE
+                      plan_action: REPLACE
+                      plan_job_max_rc: 4
+                      plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                      plan_pklist: '*.GENASA1.*'
+                      qualifier: GENADB0
+                      sdsnload: DSN.V12R1M0.SDSNLOAD
+                      sqlid: JENKINS
+                      subsys: DBC1
+                    is_binary: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.DBRM
+                      name: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                      spec:
+                        record_format: FB
+                        record_length: 80
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: dbrm
+                skip_reason: Conditional result was False
+                skipped: true
+              - ansible_loop_var: item
+                changed: false
+                item:
+                  dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB(LGACDB02)
+                  fingerprint: 5695PMB01 02042023271055204
+                  is_binary: true
+                  is_load: true
+                  is_sequential: false
+                  is_uss: false
+                  name: LGACDB02
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+                  type:
+                    cics_systems:
+                    - cmci_host: 9.30.222.103
+                      cmci_password: '***'
+                      cmci_port: 1490
+                      cmci_user: JENKINS
+                      context: CICS01
+                      csd_group: GENASAP
+                      insecure: true
+                      scheme: http
+                    copy_by_folder: true
+                    is_load: true
+                    pds:
+                      backup: NAZARE.WDEPLOY.ANSIBLE.BACK.LOADLIB
+                      name: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                      spec:
+                        record_format: U
+                        record_length: 0
+                        space_primary: 10
+                        space_secondary: 20
+                        space_type: CYL
+                        type: LIBRARY
+                    type: cicsload
+                skip_reason: Conditional result was False
+                skipped: true
+        - status: Ok
+          msg: 'member_copy.yml line 55 : ibm.ibm_zos_wazi_deploy.zos_deploy : [{{current_step_name}}]:
+            Copy the folder(s) to destination PDS(s)'
+          results:
+            register: None
+            args:
+              _raw_params: task_zos_copy.yml
+            result:
+              msg: All items completed
+              results:
+              - ansible_loop_var: item
+                include: task_zos_copy.yml
+                include_args: {}
+                item:
+                  dest: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                  is_binary: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+              - ansible_loop_var: item
+                include: task_zos_copy.yml
+                include_args: {}
+                item:
+                  dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                  is_binary: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+        - status: Ok
+          msg: 'task_zos_copy.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_copy.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy : [deploy_modules>update>member_copy]:
+            Copy /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+            to NAZARE.WDEPLOY.ANSIBLE.DBRM'
+          results:
+            register: wd_zos_module_result
+            args:
+              backup: false
+              dest: NAZARE.WDEPLOY.ANSIBLE.DBRM
+              force: true
+              is_binary: true
+              remote_src: true
+              src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+            result:
+              dest: NAZARE.WDEPLOY.ANSIBLE.DBRM
+              failed_when_result: false
+              invocation:
+                module_args:
+                  backup: false
+                  dest: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                  force: true
+                  is_binary: true
+                  remote_src: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+              is_binary: true
+              src: /SYSTEM/tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM
+        - status: Ok
+          msg: 'task_zos_copy.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_copy.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy : [deploy_modules>update>member_copy]:
+            Copy /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+            to NAZARE.WDEPLOY.ANSIBLE.LOADLIB'
+          results:
+            register: wd_zos_module_result
+            args:
+              backup: false
+              dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+              force: true
+              is_binary: true
+              remote_src: true
+              src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+            result:
+              dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+              failed_when_result: false
+              invocation:
+                module_args:
+                  backup: false
+                  dest: NAZARE.WDEPLOY.ANSIBLE.LOADLIB
+                  force: true
+                  is_binary: true
+                  remote_src: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+              is_binary: true
+              src: /SYSTEM/tmp/wd_deploy/jenkins/zos_host_01/ansible.jjag8ttv/NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD
+- name: DB2
+  actions:
+  - name: UPDATE
+    steps:
+    - name: DB2_BIND_PACKAGE
+      artifacts:
+      - hash: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+        - key: fingerprint
+          value: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        - key: old_fingerprint
+          value: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+        - key: type
+          value: DBRM
+      step_result:
+        status: Ok
+        msg: 'db2_bind_package.yml : Ok'
+        results:
+        - status: Ok
+          msg: 'db2_bind_package.yml line 13 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_db2_bind_package_list_items:
+              - artifacts:
+                - name: LGACDB02
+                db2_system:
+                  package: GENASA1
+                  package_action: REPLACE
+                  package_job_max_rc: 4
+                  package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                  plan: GENAONE
+                  plan_action: REPLACE
+                  plan_job_max_rc: 4
+                  plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                  plan_pklist: '*.GENASA1.*'
+                  qualifier: GENADB0
+                  sdsnload: DSN.V12R1M0.SDSNLOAD
+                  sqlid: JENKINS
+                  subsys: DBC1
+                dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+            result:
+              ansible_facts:
+                wd_db2_bind_package_list_items:
+                - artifacts:
+                  - name: LGACDB02
+                  db2_system:
+                    package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+        - status: Ok
+          msg: 'db2_bind_package.yml line 19 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [{{current_step_name}}]: Create BIND package JCL(s) for DB2 Systems'
+          results:
+            register: None
+            args:
+              dest: '{{wd_deploy_dir_local}}/{{inventory_hostname}}.bindpkg.{{wd_index}}.jcl'
+              src: bind-package.jcl.j2
+            result:
+              msg: All items completed
+              results:
+              - ansible_index_var: wd_index
+                ansible_loop_var: item
+                changed: true
+                checksum: 3ca477168e389f67ecbb47de1d0e1e23669e6c34
+                dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindpkg.0.jcl
+                diff: []
+                failed: false
+                gid: 984
+                group: jenkins
+                invocation:
+                  module_args:
+                    _original_basename: bind-package.jcl.j2
+                    backup: false
+                    checksum: 3ca477168e389f67ecbb47de1d0e1e23669e6c34
+                    dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindpkg.0.jcl
+                    follow: false
+                    force: true
+                    src: /var/lib/jenkins/.ansible/tmp/ansible-tmp-1695900997.7403772-1999556-259763754921210/source
+                    unsafe_writes: false
+                item:
+                  artifacts:
+                  - name: LGACDB02
+                  db2_system:
+                    package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                md5sum: c64fa3ff6d4ed4d1de68b9d8fbf1174b
+                mode: '0644'
+                owner: jenkins
+                size: 1232
+                src: /var/lib/jenkins/.ansible/tmp/ansible-tmp-1695900997.7403772-1999556-259763754921210/source
+                state: file
+                uid: 988
+                wd_index: 0
+        - status: Ok
+          msg: 'db2_bind_package.yml line 28 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [{{current_step_name}}]: Run BIND package JCL(s) for DB2 Systems'
+          results:
+            register: None
+            args:
+              _raw_params: task_zos_job_submit.yml
+            result:
+              msg: All items completed
+              results:
+              - ansible_index_var: wd_index
+                ansible_loop_var: item
+                include: task_zos_job_submit.yml
+                include_args: {}
+                item:
+                  artifacts:
+                  - name: LGACDB02
+                  db2_system:
+                    package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                wd_index: 0
+        - status: Ok
+          msg: 'task_zos_job_submit.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_job_submit.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [db2>update>db2_bind_package]: Submit JCL /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindpkg.0.jcl'
+          results:
+            register: wd_zos_module_result
+            args:
+              encoding:
+                from: UTF-8
+                to: IBM-1047
+              location: LOCAL
+              max_rc: 9999999
+              src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindpkg.0.jcl
+              wait: true
+            result:
+              checksum: 3ca477168e389f67ecbb47de1d0e1e23669e6c34
+              dest: /tmp/ansible.7fsym1ur
+              duration: 0
+              failed_when_result: false
+              gid: 100
+              group: OMVS
+              invocation:
+                module_args:
+                  encoding:
+                    from: UTF-8
+                    to: IBM-1047
+                  from_encoding: UTF-8
+                  location: LOCAL
+                  max_rc: 9999999
+                  return_output: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindpkg.0.jcl
+                  temp_file: /tmp/ansible.7fsym1ur
+                  to_encoding: IBM-1047
+                  wait: true
+                  wait_time_s: 10
+              jobs:
+              - class: A
+                content_type: ''
+                ddnames:
+                - byte_count: '133'
+                  content:
+                  - 1                    J E S 2  J O B  L O G  --  S Y S T E M  I
+                    P O 1  --  N O D E  T I V L P 0 2
+                  - '0     '
+                  - ' 07.36.43 JOB06651 ---- THURSDAY,  28 SEP 2023 ----'
+                  - ' 07.36.43 JOB06651  IRR010I  USERID JENKINS  IS ASSIGNED TO THIS
+                    JOB.'
+                  - ' 07.36.43 JOB06651  ICH70001I JENKINS  LAST ACCESS AT 07:35:20
+                    ON THURSDAY, SEPTEMBER 28, 2023'
+                  - ' 07.36.43 JOB06651  $HASP373 BINDPKG  STARTED - INIT G    - CLASS
+                    A        - SYS IPO1'
+                  - ' 07.36.43 JOB06651  -                                                --TIMINGS
+                    (MINS.)--            ----PAGING COUNTS---'
+                  - ' 07.36.43 JOB06651  -JOBNAME  STEPNAME PROCSTEP    RC   EXCP   CONN    TCB    SRB  CLOCK   SERV  PG  PAGE  SWAP   VIO
+                    SWAPS'
+                  - ' 07.36.43 JOB06651  -BINDPKG  PKGBIND              00    205      8    .00    .00     .0    910   0     0     0     0     0'
+                  - ' 07.36.43 JOB06651  -BINDPKG  ENDED.  NAME-                     TOTAL
+                    TCB CPU TIME=   .00  TOTAL ELAPSED TIME=    .0'
+                  - ' 07.36.43 JOB06651  $HASP395 BINDPKG  ENDED - RC=0000'
+                  - 0------ JES2 JOB STATISTICS ------
+                  - '-  28 SEP 2023 JOB EXECUTION DATE'
+                  - '-           21 CARDS READ'
+                  - '-          116 SYSOUT PRINT RECORDS'
+                  - '-            0 SYSOUT PUNCH RECORDS'
+                  - '-            9 SYSOUT SPOOL KBYTES'
+                  - '-         0.00 MINUTES EXECUTION TIME'
+                  ddname: JESMSGLG
+                  id: '2'
+                  record_count: '18'
+                  stepname: JES2
+                - byte_count: '136'
+                  content:
+                  - '        1 //BINDPKG JOB ''WD-PKGBIND'',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID     JOB06651'
+                  - '          IEFC653I SUBSTITUTION JCL - ''WD-PKGBIND'',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=JENKINS'
+                  - '        2 //JOBLIB   DD  DISP=SHR,'
+                  - '          //             DSN=DSN.V12R1M0.SDSNLOAD'
+                  - '        3 //PKGBIND EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)'
+                  - '        4 //SYSTSPRT DD  SYSOUT=*'
+                  - '        5 //SYSPRINT DD  SYSOUT=*'
+                  - '        6 //SYSUDUMP DD  SYSOUT=*'
+                  - '        7 //SYSIN    DD  DUMMY'
+                  - '        8 //SYSTSIN  DD  *'
+                  ddname: JESJCL
+                  id: '3'
+                  record_count: '10'
+                  stepname: JES2
+                - byte_count: '137'
+                  content:
+                  - ' ICH70001I JENKINS  LAST ACCESS AT 07:35:20 ON THURSDAY, SEPTEMBER
+                    28, 2023'
+                  - ' IEFA111I BINDPKG IS USING THE FOLLOWING JOB RELATED SETTINGS:'
+                  - '          SWA=BELOW,TIOT SIZE=32K,DSENQSHR=DISALLOW,GDGBIAS=JOB'
+                  - ' IEF236I ALLOC. FOR BINDPKG PKGBIND'
+                  - ' IEF237I 360C ALLOCATED TO JOBLIB'
+                  - ' IEF237I JES2 ALLOCATED TO SYSTSPRT'
+                  - ' IEF237I JES2 ALLOCATED TO SYSPRINT'
+                  - ' IEF237I JES2 ALLOCATED TO SYSUDUMP'
+                  - ' IEF237I DMY  ALLOCATED TO SYSIN'
+                  - ' IEF237I JES2 ALLOCATED TO SYSTSIN'
+                  - ' IGD103I SMS ALLOCATED TO DDNAME SYS00001'
+                  - ' IGD104I NAZARE.WDEPLOY.ANSIBLE.DBRM                  RETAINED,  DDNAME=SYS00001'
+                  - ' IEF142I BINDPKG PKGBIND - STEP WAS EXECUTED - COND CODE 0000'
+                  - ' IEF285I   JENKINS.BINDPKG.JOB06651.D0000102.?          SYSOUT'
+                  - ' IEF285I   JENKINS.BINDPKG.JOB06651.D0000103.?          SYSOUT'
+                  - ' IEF285I   JENKINS.BINDPKG.JOB06651.D0000104.?          SYSOUT'
+                  - ' IEF285I   JENKINS.BINDPKG.JOB06651.D0000101.?          SYSIN'
+                  - ' IEF373I STEP/PKGBIND /START 2023271.0736'
+                  - ' IEF032I STEP/PKGBIND /STOP  2023271.0736'
+                  - '         CPU:     0 HR  00 MIN  00.01 SEC    SRB:     0 HR  00
+                    MIN  00.00 SEC'
+                  - '         VIRT:   496K  SYS:   388K  EXT:      464K  SYS:    12012K'
+                  - '         ATB- REAL:                  1056K  SLOTS:                     0K'
+                  - '              VIRT- ALLOC:      13M SHRD:       0M'
+                  - ' IEF285I   DSN.V12R1M0.SDSNLOAD                         KEPT'
+                  - ' IEF285I   VOL SER NOS= PP0M1P.'
+                  - ' IEF375I  JOB/BINDPKG /START 2023271.0736'
+                  - ' IEF033I  JOB/BINDPKG /STOP  2023271.0736'
+                  - '         CPU:     0 HR  00 MIN  00.01 SEC    SRB:     0 HR  00
+                    MIN  00.00 SEC'
+                  ddname: JESYSMSG
+                  id: '4'
+                  record_count: '28'
+                  stepname: JES2
+                - byte_count: '137'
+                  content:
+                  - 1READY
+                  - ' DSN SYSTEM (DBC1)'
+                  - ' DSN  '
+                  - ' BIND  PACKAGE(GENASA1) MEMBER(LGACDB02) LIBRARY(''NAZARE.WDEPLOY.ANSIBLE.DBRM'')
+                    QUALIFIER(GENADB0) OWNER(JENKINS) ACTION(REPLACE) ISO'
+                  - ' LATION(CS) RELEASE(COMMIT) ENCODING(EBCDIC)'
+                  - ' DSNT254I  -DBC1 DSNTBCM2 BIND OPTIONS FOR'
+                  - '            PACKAGE = DBC1.GENASA1.LGACDB02.()'
+                  - '            ACTION        REPLACE'
+                  - '            OWNER         JENKINS'
+                  - '            QUALIFIER     GENADB0'
+                  - '            VALIDATE      RUN'
+                  - '            EXPLAIN       NO'
+                  - '            ISOLATION     CS'
+                  - '            RELEASE       COMMIT'
+                  - '            COPY'
+                  - '            APREUSE'
+                  - '            APCOMPARE'
+                  - '            APRETAINDUP'
+                  - '            BUSTIMESENSITIVE YES'
+                  - '            SYSTIMESENSITIVE YES'
+                  - '            ARCHIVESENSITIVE YES'
+                  - '            APPLCOMPAT V12R1'
+                  - '            DESCSTAT YES'
+                  - '            APREUSESOURCE'
+                  - ' DSNT255I  -DBC1 DSNTBCM2 BIND OPTIONS FOR'
+                  - '            PACKAGE = DBC1.GENASA1.LGACDB02.()'
+                  - '            SQLERROR      NOPACKAGE'
+                  - '            CURRENTDATA   NO'
+                  - '            DEGREE        1'
+                  - '            DYNAMICRULES'
+                  - '            DEFER'
+                  - '            NOREOPT       VARS'
+                  - '            KEEPDYNAMIC   NO'
+                  - '            IMMEDWRITE    INHERITFROMPLAN'
+                  - '            DBPROTOCOL    DRDA'
+                  - '            OPTHINT'
+                  - '            ENCODING      EBCDIC(00037)'
+                  - '            PLANMGMT      OFF'
+                  - '            PLANMGMTSCOPE STATIC'
+                  - '            CONCURRENTACCESSRESOLUTION'
+                  - '            EXTENDEDINDICATOR'
+                  - '            PATH'
+                  - ' DSNT275I  -DBC1 DSNTBCM2 BIND OPTIONS FOR'
+                  - '            PACKAGE = DBC1.GENASA1.LGACDB02.()'
+                  - '            QUERYACCELERATION'
+                  - '            GETACCELARCHIVE'
+                  - '            ACCELERATOR'
+                  - '            CONCENTRATESTMT'
+                  - '            ACCELERATIONWAITFORDATA'
+                  - '            RESTSERVICEDEFAULT'
+                  - ' DSNT232I  -DBC1 SUCCESSFUL BIND FOR'
+                  - '            PACKAGE = DBC1.GENASA1.LGACDB02.()'
+                  - ' DSN  '
+                  - ' END  '
+                  - 1READY
+                  - ' END  '
+                  ddname: SYSTSPRT
+                  id: '102'
+                  record_count: '56'
+                  stepname: PKGBIND
+                duration: 0
+                job_id: JOB06651
+                job_name: BINDPKG
+                owner: JENKINS
+                ret_code:
+                  code: 0
+                  msg: CC 0000
+                  msg_code: '0000'
+                  msg_text: CC
+                  steps:
+                  - step_cc: 0
+                    step_name: PKGBIND
+                subsystem: TIVLP02
+                system: IPO1
+              md5sum: c64fa3ff6d4ed4d1de68b9d8fbf1174b
+              mode: '0600'
+              owner: JENKINS
+              size: 1232
+              src: /u/jenkins/.ansible/tmp/ansible-tmp-1695901000.4790723-1999585-248302411852412/source
+              state: file
+              uid: 10030
+    - name: DB2_BIND_PLAN
+      artifacts:
+      - hash: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.DBRM/LGACDB02.DBRM
+        - key: fingerprint
+          value: 7692492779128bdad43836dfc5fe9ceaf2c2c1e93387f2e4956892682bbb9c75
+        - key: old_fingerprint
+          value: a5c408d07445937b237f8de05536a97ca65afcd76c40b5251f3f905c055ff7ce
+        - key: type
+          value: DBRM
+      step_result:
+        status: Ok
+        msg: 'db2_bind_plan.yml : Ok'
+        results:
+        - status: Ok
+          msg: 'db2_bind_plan.yml line 13 : ibm.ibm_zos_wazi_deploy.zos_deploy : set_fact'
+          results:
+            register: None
+            args:
+              wd_db2_bind_package_list_items:
+              - artifacts:
+                - name: LGACDB02
+                db2_system:
+                  package: GENASA1
+                  package_action: REPLACE
+                  package_job_max_rc: 4
+                  package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                  plan: GENAONE
+                  plan_action: REPLACE
+                  plan_job_max_rc: 4
+                  plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                  plan_pklist: '*.GENASA1.*'
+                  qualifier: GENADB0
+                  sdsnload: DSN.V12R1M0.SDSNLOAD
+                  sqlid: JENKINS
+                  subsys: DBC1
+                dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+            result:
+              ansible_facts:
+                wd_db2_bind_package_list_items:
+                - artifacts:
+                  - name: LGACDB02
+                  db2_system:
+                    package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+        - status: Ok
+          msg: 'db2_bind_plan.yml line 19 : ibm.ibm_zos_wazi_deploy.zos_deploy : [{{current_step_name}}]:
+            Create BIND PLAN JCL(s) for DB2 Systems'
+          results:
+            register: None
+            args:
+              dest: '{{wd_deploy_dir_local}}/{{inventory_hostname}}.bindplan.{{wd_index}}.jcl'
+              src: bind-plan.jcl.j2
+            result:
+              msg: All items completed
+              results:
+              - ansible_index_var: wd_index
+                ansible_loop_var: item
+                changed: true
+                checksum: 391b2875555c97d38de34a9dbcf97704fbeb2956
+                dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindplan.0.jcl
+                diff: []
+                failed: false
+                gid: 984
+                group: jenkins
+                invocation:
+                  module_args:
+                    _original_basename: bind-plan.jcl.j2
+                    backup: false
+                    checksum: 391b2875555c97d38de34a9dbcf97704fbeb2956
+                    dest: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindplan.0.jcl
+                    follow: false
+                    force: true
+                    src: /var/lib/jenkins/.ansible/tmp/ansible-tmp-1695901008.6289365-1999629-48113284132180/source
+                    unsafe_writes: false
+                item:
+                  artifacts:
+                  - name: LGACDB02
+                  db2_system:
+                    package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                md5sum: 87f5eaa6337b03fa844281e71eb8c984
+                mode: '0644'
+                owner: jenkins
+                size: 1189
+                src: /var/lib/jenkins/.ansible/tmp/ansible-tmp-1695901008.6289365-1999629-48113284132180/source
+                state: file
+                uid: 988
+                wd_index: 0
+        - status: Ok
+          msg: 'db2_bind_plan.yml line 28 : ibm.ibm_zos_wazi_deploy.zos_deploy : [{{current_step_name}}]:
+            Run BIND PLAN JCL(s) for DB2 Systems'
+          results:
+            register: None
+            args:
+              _raw_params: task_zos_job_submit.yml
+            result:
+              msg: All items completed
+              results:
+              - ansible_index_var: wd_index
+                ansible_loop_var: item
+                include: task_zos_job_submit.yml
+                include_args: {}
+                item:
+                  artifacts:
+                  - name: LGACDB02
+                  db2_system:
+                    package: GENASA1
+                    package_action: REPLACE
+                    package_job_max_rc: 4
+                    package_jobcard: BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan: GENAONE
+                    plan_action: REPLACE
+                    plan_job_max_rc: 4
+                    plan_jobcard: BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+                    plan_pklist: '*.GENASA1.*'
+                    qualifier: GENADB0
+                    sdsnload: DSN.V12R1M0.SDSNLOAD
+                    sqlid: JENKINS
+                    subsys: DBC1
+                  dest_pds: NAZARE.WDEPLOY.ANSIBLE.DBRM
+                wd_index: 0
+        - status: Ok
+          msg: 'task_zos_job_submit.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_zos_job_submit.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [db2>update>db2_bind_plan]: Submit JCL /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindplan.0.jcl'
+          results:
+            register: wd_zos_module_result
+            args:
+              encoding:
+                from: UTF-8
+                to: IBM-1047
+              location: LOCAL
+              max_rc: 9999999
+              src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindplan.0.jcl
+              wait: true
+            result:
+              checksum: 391b2875555c97d38de34a9dbcf97704fbeb2956
+              dest: /tmp/ansible.zz3h8cuu
+              duration: 0
+              failed_when_result: false
+              gid: 100
+              group: OMVS
+              invocation:
+                module_args:
+                  encoding:
+                    from: UTF-8
+                    to: IBM-1047
+                  from_encoding: UTF-8
+                  location: LOCAL
+                  max_rc: 9999999
+                  return_output: true
+                  src: /tmp/wd_deploy/jenkins/zos_host_01/ansible.h5vz9udw/zos_host_01.bindplan.0.jcl
+                  temp_file: /tmp/ansible.zz3h8cuu
+                  to_encoding: IBM-1047
+                  wait: true
+                  wait_time_s: 10
+              jobs:
+              - class: A
+                content_type: ''
+                ddnames:
+                - byte_count: '133'
+                  content:
+                  - 1                    J E S 2  J O B  L O G  --  S Y S T E M  I
+                    P O 1  --  N O D E  T I V L P 0 2
+                  - '0     '
+                  - ' 07.36.54 JOB06652 ---- THURSDAY,  28 SEP 2023 ----'
+                  - ' 07.36.54 JOB06652  IRR010I  USERID JENKINS  IS ASSIGNED TO THIS
+                    JOB.'
+                  - ' 07.36.54 JOB06652  ICH70001I JENKINS  LAST ACCESS AT 07:36:43
+                    ON THURSDAY, SEPTEMBER 28, 2023'
+                  - ' 07.36.54 JOB06652  $HASP373 BINDPLA  STARTED - INIT G    - CLASS
+                    A        - SYS IPO1'
+                  - ' 07.36.54 JOB06652  -                                                --TIMINGS
+                    (MINS.)--            ----PAGING COUNTS---'
+                  - ' 07.36.54 JOB06652  -JOBNAME  STEPNAME PROCSTEP    RC   EXCP   CONN    TCB    SRB  CLOCK   SERV  PG  PAGE  SWAP   VIO
+                    SWAPS'
+                  - ' 07.36.54 JOB06652  -BINDPLA  PLABIND              00    176      7    .00    .00     .0    527   0     0     0     0     0'
+                  - ' 07.36.54 JOB06652  -BINDPLA  ENDED.  NAME-                     TOTAL
+                    TCB CPU TIME=   .00  TOTAL ELAPSED TIME=    .0'
+                  - ' 07.36.54 JOB06652  $HASP395 BINDPLA  ENDED - RC=0000'
+                  - 0------ JES2 JOB STATISTICS ------
+                  - '-  28 SEP 2023 JOB EXECUTION DATE'
+                  - '-           20 CARDS READ'
+                  - '-           95 SYSOUT PRINT RECORDS'
+                  - '-            0 SYSOUT PUNCH RECORDS'
+                  - '-            8 SYSOUT SPOOL KBYTES'
+                  - '-         0.00 MINUTES EXECUTION TIME'
+                  ddname: JESMSGLG
+                  id: '2'
+                  record_count: '18'
+                  stepname: JES2
+                - byte_count: '136'
+                  content:
+                  - '        1 //BINDPLA JOB ''WD-PLANBIND'',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID    JOB06652'
+                  - '          IEFC653I SUBSTITUTION JCL - ''WD-PLANBIND'',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=JENKINS'
+                  - '        2 //JOBLIB   DD  DISP=SHR,'
+                  - '          //             DSN=DSN.V12R1M0.SDSNLOAD'
+                  - '        3 //PLABIND EXEC PGM=IKJEFT01,DYNAMNBR=20,COND=(4,LT)'
+                  - '        4 //SYSTSPRT DD  SYSOUT=*'
+                  - '        5 //SYSPRINT DD  SYSOUT=*'
+                  - '        6 //SYSUDUMP DD  SYSOUT=*'
+                  - '        7 //SYSIN    DD  DUMMY'
+                  - '        8 //SYSTSIN  DD  *'
+                  ddname: JESJCL
+                  id: '3'
+                  record_count: '10'
+                  stepname: JES2
+                - byte_count: '137'
+                  content:
+                  - ' ICH70001I JENKINS  LAST ACCESS AT 07:36:43 ON THURSDAY, SEPTEMBER
+                    28, 2023'
+                  - ' IEFA111I BINDPLA IS USING THE FOLLOWING JOB RELATED SETTINGS:'
+                  - '          SWA=BELOW,TIOT SIZE=32K,DSENQSHR=DISALLOW,GDGBIAS=JOB'
+                  - ' IEF236I ALLOC. FOR BINDPLA PLABIND'
+                  - ' IEF237I 360C ALLOCATED TO JOBLIB'
+                  - ' IEF237I JES2 ALLOCATED TO SYSTSPRT'
+                  - ' IEF237I JES2 ALLOCATED TO SYSPRINT'
+                  - ' IEF237I JES2 ALLOCATED TO SYSUDUMP'
+                  - ' IEF237I DMY  ALLOCATED TO SYSIN'
+                  - ' IEF237I JES2 ALLOCATED TO SYSTSIN'
+                  - ' IEF142I BINDPLA PLABIND - STEP WAS EXECUTED - COND CODE 0000'
+                  - ' IEF285I   JENKINS.BINDPLA.JOB06652.D0000102.?          SYSOUT'
+                  - ' IEF285I   JENKINS.BINDPLA.JOB06652.D0000103.?          SYSOUT'
+                  - ' IEF285I   JENKINS.BINDPLA.JOB06652.D0000104.?          SYSOUT'
+                  - ' IEF285I   JENKINS.BINDPLA.JOB06652.D0000101.?          SYSIN'
+                  - ' IEF373I STEP/PLABIND /START 2023271.0736'
+                  - ' IEF032I STEP/PLABIND /STOP  2023271.0736'
+                  - '         CPU:     0 HR  00 MIN  00.01 SEC    SRB:     0 HR  00
+                    MIN  00.00 SEC'
+                  - '         VIRT:   492K  SYS:   336K  EXT:      464K  SYS:    11884K'
+                  - '         ATB- REAL:                  1056K  SLOTS:                     0K'
+                  - '              VIRT- ALLOC:      13M SHRD:       0M'
+                  - ' IEF285I   DSN.V12R1M0.SDSNLOAD                         KEPT'
+                  - ' IEF285I   VOL SER NOS= PP0M1P.'
+                  - ' IEF375I  JOB/BINDPLA /START 2023271.0736'
+                  - ' IEF033I  JOB/BINDPLA /STOP  2023271.0736'
+                  - '         CPU:     0 HR  00 MIN  00.01 SEC    SRB:     0 HR  00
+                    MIN  00.00 SEC'
+                  ddname: JESYSMSG
+                  id: '4'
+                  record_count: '26'
+                  stepname: JES2
+                - byte_count: '137'
+                  content:
+                  - 1READY
+                  - ' DSN SYSTEM (DBC1)'
+                  - ' DSN  '
+                  - ' BIND  PLAN(GENAONE) PKLIST(*.GENASA1.*) QUALIFIER(GENADB0) OWNER(JENKINS)
+                    ACTION(REPLACE) ISOLATION(CS) RELEASE(COMMIT) ENCODING(EBC'
+                  - ' DIC) '
+                  - ' DSNT252I  -DBC1 DSNTBCM1 BIND OPTIONS FOR PLAN GENAONE'
+                  - '            ACTION        REPLACE'
+                  - '            OWNER         JENKINS'
+                  - '            VALIDATE      RUN'
+                  - '            ISOLATION     CS'
+                  - '            ACQUIRE       USE'
+                  - '            RELEASE       COMMIT'
+                  - '            EXPLAIN       NO'
+                  - '            DYNAMICRULES  RUN'
+                  - '            PROGAUTH      DISABLE'
+                  - ' DSNT253I  -DBC1 DSNTBCM1 BIND OPTIONS FOR PLAN GENAONE'
+                  - '            NODEFER       PREPARE'
+                  - '            CACHESIZE     3072'
+                  - '            QUALIFIER     GENADB0'
+                  - '            CURRENTSERVER'
+                  - '            CURRENTDATA   NO'
+                  - '            DEGREE        1'
+                  - '            SQLRULES      DB2'
+                  - '            DISCONNECT    EXPLICIT'
+                  - '            NOREOPT       VARS'
+                  - '            KEEPDYNAMIC   NO'
+                  - '            IMMEDWRITE    NO'
+                  - '            DBPROTOCOL    DRDA'
+                  - '            OPTHINT'
+                  - '            ENCODING      EBCDIC(00037)'
+                  - '            CONCURRENTACCESSRESOLUTION'
+                  - '            PATH'
+                  - ' DSNT200I  -DBC1  BIND FOR PLAN GENAONE  SUCCESSFUL'
+                  - ' DSN  '
+                  - ' END  '
+                  - ' READY'
+                  - ' END  '
+                  ddname: SYSTSPRT
+                  id: '102'
+                  record_count: '37'
+                  stepname: PLABIND
+                duration: 1
+                job_id: JOB06652
+                job_name: BINDPLA
+                owner: JENKINS
+                ret_code:
+                  code: 0
+                  msg: CC 0000
+                  msg_code: '0000'
+                  msg_text: CC
+                  steps:
+                  - step_cc: 0
+                    step_name: PLABIND
+                subsystem: TIVLP02
+                system: IPO1
+              md5sum: 87f5eaa6337b03fa844281e71eb8c984
+              mode: '0600'
+              owner: JENKINS
+              size: 1189
+              src: /u/jenkins/.ansible/tmp/ansible-tmp-1695901011.3855667-1999658-136256689082410/source
+              state: file
+              uid: 10030
+- name: CICS
+  actions:
+  - name: UPDATE
+    steps:
+    - name: PROG_UPDATE
+      properties:
+      - key: template
+        value: cics_cmci_prog_update
+      artifacts:
+      - hash: c65d96aea64b1d837b32b0312d087921067aca16543c7089c5a7e9f517cbf9ff
+        name: LGACDB02
+        properties:
+        - key: path
+          value: NAZARE.WDEPLOY.DBBBUILD.GENAPP.LOAD/LGACDB02.CICSLOAD
+        - key: fingerprint
+          value: 5695PMB01 02042023271073326
+        - key: old_fingerprint
+          value: 5695PMB01 02042023271055204
+        - key: type
+          value: CICSLOAD
+      step_result:
+        status: Ok
+        msg: 'cics_cmci_prog_update.yml : Ok'
+        results:
+        - status: Ok
+          msg: 'cics_cmci_prog_update.yml line 14 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_cics_cmci_action: PHASEIN
+              wd_cics_cmci_prog_update_list_items:
+              - cics_system:
+                  cmci_host: 9.30.222.103
+                  cmci_password: '***'
+                  cmci_port: 1490
+                  cmci_user: JENKINS
+                  context: CICS01
+                  csd_group: GENASAP
+                  insecure: true
+                  scheme: http
+                name: LGACDB02
+            result:
+              ansible_facts:
+                wd_cics_cmci_action: PHASEIN
+                wd_cics_cmci_prog_update_list_items:
+                - cics_system:
+                    cmci_host: 9.30.222.103
+                    cmci_password: '***'
+                    cmci_port: 1490
+                    cmci_user: JENKINS
+                    context: CICS01
+                    csd_group: GENASAP
+                    insecure: true
+                    scheme: http
+                  name: LGACDB02
+        - status: Ok
+          msg: 'cics_cmci_prog_update.yml line 22 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [{{current_step_name}}]: Perfom CICS Update on PROGRAM(s)'
+          results:
+            register: None
+            args:
+              _raw_params: task_cmci_action.yml
+            result:
+              msg: All items completed
+              results:
+              - ansible_loop_var: item
+                include: task_cmci_action.yml
+                include_args: {}
+                item:
+                  cics_system:
+                    cmci_host: 9.30.222.103
+                    cmci_password: '***'
+                    cmci_port: 1490
+                    cmci_user: JENKINS
+                    context: CICS01
+                    csd_group: GENASAP
+                    insecure: true
+                    scheme: http
+                  name: LGACDB02
+        - status: Ok
+          msg: 'task_cmci_action.yml line 15 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : set_fact'
+          results:
+            register: None
+            args:
+              wd_ignore_errors_var: false
+            result:
+              ansible_facts:
+                wd_ignore_errors_var: false
+        - status: Ok
+          msg: 'task_cmci_action.yml line 18 : ibm.ibm_zos_wazi_deploy.zos_deploy
+            : [cics>update>prog_update]: Perfom ''PHASEIN'' for ''LGACDB02'' in CICS
+            Context ''CICS01'''
+          results:
+            register: wd_zos_module_result
+            args:
+              action_name: PHASEIN
+              cmci_host: 9.30.222.103
+              cmci_password: '***'
+              cmci_port: '1490'
+              cmci_user: JENKINS
+              context: CICS01
+              insecure: true
+              resources:
+                filter:
+                  program: LGACDB02
+              scheme: http
+              type: CICSProgram
+            result:
+              connect_version: '0550'
+              cpsm_reason: ''
+              cpsm_reason_code: 0
+              cpsm_response: OK
+              cpsm_response_code: 1024
+              http_status: OK
+              http_status_code: 200
+              invocation:
+                module_args:
+                  action_name: PHASEIN
+                  cmci_host: 9.30.222.103
+                  cmci_password: '***'
+                  cmci_port: 1490
+                  cmci_user: JENKINS
+                  context: CICS01
+                  insecure: true
+                  resources:
+                    filter:
+                      program: LGACDB02
+                  scheme: http
+                  timeout: 30
+                  type: CICSProgram
+              record_count: 1
+              records:
+              - _keydata: D3C7C1C3C4C2F0F2
+                aloadtime: '00:00:00.000000'
+                apist: CICSAPI
+                application: ''
+                applmajorver: '-1'
+                applmicrover: '-1'
+                applminorver: '-1'
+                basdefinever: '0'
+                cedfstatus: CEDF
+                changeagent: CSDBATCH
+                changeagrel: '0720'
+                changetime: '2019-01-30T05:38:59.000000+00:00'
+                changeusrid: SUMANG
+                coboltype: NOTINIT
+                concurrency: QUASIRENT
+                copy: NOTREQUIRED
+                currentloc: NOCOPY
+                datalocation: ANY
+                definesource: GENASAP
+                definetime: '2019-01-30T05:38:59.000000+00:00'
+                dynamstatus: NOTDYNAMIC
+                entrypoint: FF000000
+                execkey: USEREXECKEY
+                executionset: FULLAPI
+                eyu_cicsname: CICS01
+                eyu_cicsrel: E720
+                eyu_reserved: '0'
+                fetchcnt: '0'
+                fetchtime: '00:00:00.000000'
+                holdstatus: NOTAPPLIC
+                installagent: GRPLIST
+                installtime: '2020-05-01T16:16:15.000000+00:00'
+                installusrid: CICSUSER
+                jvmclass: ''
+                jvmserver: ''
+                language: COBOL
+                length: '8476'
+                library: NAZGEN
+                librarydsn: NAZARE.GENAPP.LOADLIB
+                loadpoint: FF000000
+                lpastat: NOTAPPLIC
+                newcopycnt: '7'
+                operation: ''
+                pgrjusecount: '0'
+                platform: ''
+                program: LGACDB02
+                progtype: PROGRAM
+                remotename: ''
+                remotesystem: ''
+                removecnt: '0'
+                rescount: '0'
+                residency: NONRESIDENT
+                rloading: '0.000'
+                rplid: '0'
+                rremoval: '0.000'
+                runtime: UNKNOWN
+                ruse: '0.000'
+                sharestatus: PRIVATE
+                status: ENABLED
+                transid: ''
+                useagelstat: '0'
+                usecount: '0'
+                usefetch: '0.000'
+              request:
+                body: <request><action name="PHASEIN"></action></request>
+                method: PUT
+                url: http://9.30.222.103:1490/CICSSystemManagement/cicsprogram/CICS01/?CRITERIA=%28program%3D%27LGACDB02%27%29
+manifests:
+- annotations:
+    creation_timestamp: 20230928.113350.888
+    dbb:
+      build_result_uri: https://zdevops-demo1.fyre.ibm.com:9443/dbb/rest/buildResult/52795
+    package:
+      name: sys-wazi-deploy-team/cics-genapp-wazideploy-dynamic-build
+      properties:
+      - key: repository_path
+        value: wazideploy/dynamic/cics-genapp
+      - key: repository
+        value: sys-wazi-deploy-team-pentest-generic-local
+      - key: build_name
+        value: sys-wazi-deploy-team/cics-genapp-wazideploy-dynamic-build
+      - key: build_number
+        value: '7'
+      type: ARTIFACTORY
+      uri: https://na.artifactory.swg-devops.com/ui/builds/sys-wazi-deploy-team%2Fcics-genapp-wazideploy-dynamic-build/7
+    scm:
+      branch: wazideploy
+      short_commit: abdf433e
+      type: git
+      uri: git@github.com:jbyibm/cics-genapp.git
+  description: cics-genapp
+  name: cics-genapp
+  version: 1.0.14

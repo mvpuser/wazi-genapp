@@ -1,0 +1,253 @@
+// Agent labels
+def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'wazideploy-e2e-pipeline'
+
+// DBB Git repositories (For DBB 1.X)
+def zAppBuildGitRepo = 'https://github.com/IBM/dbb-zappbuild.git'
+def zAppBuildGitBranch = 'zAppBuild_2_x'
+def dbbGitRepo = 'https://github.com/IBM/dbb.git'
+def dbbGitBranch = 'main'
+def gitCredId = 'git_hub_cred'
+
+// Private
+def appName="cics-genapp"
+def verbose = false
+def hasBuildFiles = true
+def hasDeletedFiles = false
+def srcGitRepo =  null
+def srcGitBranch = null
+
+pipeline {
+
+    agent { label zOsAgentLabel }
+    
+    environment {
+        APP_NAME = "${appName}"
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        DBB_HOME = "${env.DBB_HOME ? env.DBB_HOME : '/usr/lpp/IBM/dbb'}"
+        DBB_URL = "${env.DBB_URL ? env.DBB_URL : 'https://example.com:9443/dbb'}"
+        DBB_HLQ = "${env.DBB_HLQ ? env.DBB_HLQ : 'IBMUSER.GENAPP.DBBBUILD'}"
+        DBB_CRED = "${env.DBB_CRED ? env.DBB_CRED : '-id ADMIN -pw ADMIN'}"
+        GROOVYZ_BUILD_EXTRA_OPTS = "${env.GROOVYZ_BUILD_EXTRA_OPTS ? env.GROOVYZ_BUILD_EXTRA_OPTS : ''}"
+        DBB_BUILD_EXTRA_OPTS = "${env.DBB_BUILD_EXTRA_OPTS ? env.DBB_BUILD_EXTRA_OPTS : ''}"
+        PYTHON_INTERPRETER = "${env.PYTHON_INTERPRETER ? env.PYTHON_INTERPRETER : '/usr/lpp/IBM/cyp/v3r10/pyz/bin/python3'}"
+        ZOAU_HOME ="${env.ZOAU_HOME ? env.ZOAU_HOME : '/usr/lpp/IBM/zoautil'}"
+        ARTIFACTORY_URL  = "${env.ARTIFACTORY_URL  ? env.ARTIFACTORY_URL : 'https://example.com/artifactory'}"
+        ARTIFACTORY_CRED_ID = "${env.ARTIFACTORY_CRED_ID ? env.ARTIFACTORY_CRED_ID : 'artifactory_id'}"
+        ARTIFACTORY_REPO = "${env.ARTIFACTORY_REPO  ? env.ARTIFACTORY_REPO : 'repository'}"
+        ARTIFACTORY_REPO_PATH = "${env.ARTIFACTORY_REPO_PATH ? env.ARTIFACTORY_REPO_PATH : 'wazideploy/dynamic/' + appName}"
+        ARTIFACTORY_DYNAMIC_BUILD_NAME = "${env.ARTIFACTORY_DYNAMIC_BUILD_NAME ? env.ARTIFACTORY_DYNAMIC_BUILD_NAME : appName + '-wazideploy-dynamic-build'}"
+        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : ''}"
+     }
+     
+     parameters {
+       string(defaultValue: "1.0", description: 'Realese Version (build number will be added).', name: 'RELEASE_VERSION')
+       booleanParam(defaultValue: false, description: 'Display verbose output', name: 'VERBOSE')
+       choice(choices: ["--impactBuild", "--fullBuild"], description: 'DBB Build Type.', name: 'DBB_BUILD_TYPE')
+    }
+
+    options { skipDefaultCheckout(true) }
+
+    stages {
+        
+        stage('Git Clone/Refresh') {
+            steps {
+                script {
+                    verbose = env.VERBOSE && env.VERBOSE == 'true' ? true : false
+                    env.BUILD_VERBOSE = verbose ? '-v' : ''
+                    if ( verbose ) {
+                        echo sh(script: 'env|sort', returnStdout: true)
+                    }
+                    dir(appName) {
+                        srcGitRepo = scm.getUserRemoteConfigs()[0].getUrl()
+                        srcGitBranch = scm.branches[0].name
+                        if ( env.APP_GIT_BRANCH == null || env.APP_GIT_BRANCH == "") {
+                            srcGitBranch = scm.branches[0].name
+                            env.GIT_BRANCH = srcGitBranch
+                        } else
+                            srcGitBranch =  env.GIT_BRANCH
+                        def scmVars = null
+                        scmVars = checkout([$class: 'GitSCM', branches: [[name: srcGitBranch]],
+                                                doGenerateSubmoduleConfigurations: false,
+                                                submoduleCfg: [],
+                                                userRemoteConfigs: [[
+                                                                     url: srcGitRepo, credentialsId: gitCredId
+                                                                     ]]])
+                    }
+                    dir("dbb-zappbuild") {
+                        def scmVars =
+                            checkout([$class: 'GitSCM', branches: [[name: zAppBuildGitBranch]],
+                                    doGenerateSubmoduleConfigurations: false,
+                                    submoduleCfg: [],
+                                    userRemoteConfigs: [[
+                                        url: zAppBuildGitRepo,
+                            ]]])
+                    }
+                }
+            }
+        }
+
+        stage('DBB Build') {
+            steps {
+                script{
+                    // DBB Build
+                    if ( env.DBB_BUILD_TYPE == null )
+                        env.DBB_BUILD_TYPE = "--fullBuild"
+                    rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            CMD="$DBB_HOME/bin/groovyz $GROOVYZ_BUILD_EXTRA_OPTS\
+                                ${WORKSPACE}/dbb-zappbuild/build.groovy --logEncoding UTF-8 -w ${WORKSPACE}\
+                                --workDir ${WORKSPACE}/BUILD-${BUILD_NUMBER} --hlq ${DBB_HLQ} --url ${DBB_URL}\
+                                ${DBB_CRED} -d ${DBB_BUILD_TYPE} ${BUILD_VERBOSE} ${DBB_BUILD_EXTRA_OPTS}\
+                                --application ${APP_NAME} --sourceDir ${WORKSPACE}"
+                            echo $CMD
+                            $CMD
+                            rc=$?
+                            mv -f ${WORKSPACE}/BUILD-${BUILD_NUMBER}/*/deletedFilesList.txt ${WORKSPACE}/BUILD-${BUILD_NUMBER} 2>/dev/null
+                            exit $rc
+                        ''')
+                    if ( rc != 0 )
+                        error("DBB build failed!!!")
+
+                    def files = findFiles(glob: "**BUILD-${BUILD_NUMBER}/**/buildList.txt")
+                    // Do not enter into some steps if nothing in the build list
+                    // hasDeletedFiles = fileExists "${WORKSPACE}/BUILD-${BUILD_NUMBER}/deletedFilesList.txt"
+                    hasBuildFiles = files.length > 0 && files[0].length > 0
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/*.log,**/*.json,**/*.html',
+                                        excludes: '**/*clist',
+                                        onlyIfSuccessful: false
+                    }
+                }
+            }
+        }
+
+
+        stage('Package & Artifactory Upload') {
+           environment {
+              ARTI_CREDS = credentials("$ARTIFACTORY_CRED_ID")
+            }
+            steps {
+                script {
+                    if ( hasBuildFiles || hasDeletedFiles ) {
+                        writeFile file: "${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml", encoding: "UTF-8",
+                        text:"""artifact_repository:
+   # The type of the artifactory manager [artifactory|nexus]]
+   type: 'artifactory'
+   # The URL to the Artifactory Server
+   url: ${ARTIFACTORY_URL}
+   # Artifactory credentials
+   user: ${ARTI_CREDS_USR}
+   password: ${ARTI_CREDS_PSW}
+                             """
+                        if ( env.PYTHON_VIRTUAL_ENV_COMMAND == null  ){
+                            env.PYTHON_VIRTUAL_ENV_COMMAND = ""
+                        }
+
+                        if ( env.RELEASE_VERSION == null )
+                            env.RELEASE_VERSION = "1.0"
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                            then
+                               echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                               . $PYTHON_VIRTUAL_ENV_COMMAND
+                               export PYTHON_INTERPRETER="python3"
+                            else
+                               export PATH=$PATH:$HOME/.local/bin
+                            fi
+                            
+                            BUILD_OUTPUT_FOLDER=$(ls ${WORKSPACE}/BUILD-${BUILD_NUMBER} | grep "build.*[0-9]$" | tail -n 1)
+                            mkdir -p ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package
+                            
+                            cd ${WORKSPACE}
+                            CMD="${PYTHON_INTERPRETER}\
+                                   ${WORKSPACE}/${APP_NAME}/wazideploy-samples/python/dbb/dbb_prepare_local_folder.py\
+                                   --dbbBuildResult ${WORKSPACE}/BUILD-${BUILD_NUMBER}/${BUILD_OUTPUT_FOLDER}/BuildReport.json\
+                                   --workingFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package"
+                            echo $CMD
+                            $CMD
+                            rc=$?
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                            echo ""
+                            CMD="wazideploy-package\
+                                    --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml\
+                                    --localFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package\
+                                    --repository  ${ARTIFACTORY_REPO}\
+                                    --repositoryPath  ${ARTIFACTORY_REPO_PATH}\
+                                    --buildName ${ARTIFACTORY_DYNAMIC_BUILD_NAME}\
+                                    --buildUrl "${BUILD_URL}"\
+                                    --manifestVersion "${RELEASE_VERSION}.${BUILD_NUMBER}"\
+                                    --manifestName "${APP_NAME}"\
+                                    --manifestDescription "${APP_NAME}"\
+                                    --manifest ${WORKSPACE}/${APP_NAME}/wazideploy-samples/application-manifest/application-manifest.yml\
+                                    --uploadType delta"
+                            echo ""
+                            echo $CMD
+                            $CMD
+                            rc=$?
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                            CMD="${PYTHON_INTERPRETER}\
+                                ${WORKSPACE}/${APP_NAME}/wazideploy-samples/python/dbb/dbb_update_manifest_fingerprints.py\
+                               --dbbBuildResult ${WORKSPACE}/BUILD-${BUILD_NUMBER}/${BUILD_OUTPUT_FOLDER}/BuildReport.json\
+                               --sourceFolder ${WORKSPACE}/${APP_NAME}\
+                               --manifest ${WORKSPACE}/${APP_NAME}/wazideploy-samples/application-manifest/application-manifest.yml"
+                            echo $CMD
+                            $CMD
+                            rc=$?
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                        ''')
+                        if ( rc != 0 )
+                            error("Uploading Package failed!!!")
+                            
+                        // Upload application state
+                        // sshagent([gitCredId]) { // Does not work on z/OS
+                        withCredentials([sshUserPrivateKey(credentialsId: gitCredId, keyFileVariable: 'SSH_KEY')]) { // Only for tests
+                            rc = sh (returnStatus: true, script: '''#!/bin/sh
+                                chtag -t -c ISO8859-1 $SSH_KEY
+                                export GIT_SSH_COMMAND="ssh -i $SSH_KEY"
+                                cd ${WORKSPACE}/${APP_NAME}
+                                git add wazideploy-samples/application-manifest/application-manifest.yml > git.log 2>&1
+                                git commit -am "Commit the new application state into ${GIT_BRANCH}" >> git.log 2>&1
+                                git push origin HEAD:${GIT_BRANCH} >> git.log 2>&1
+                                # For jenkins artifact upload
+                                chtag -r ${WORKSPACE}/${APP_NAME}/wazideploy-samples/application-manifest/application-manifest.yml >> git.log 2>&1
+                               cat git.log
+                            ''')
+                            if ( rc != 0 )
+                                error("Uploading application state to Git failed!!!")
+                        }
+                     }
+                }
+            }
+            post {
+                always {
+                    //steps {
+                        script {
+                             dir("${WORKSPACE}/${APP_NAME}/wazideploy-samples/application-manifest") {
+                                    rc = sh (returnStatus: true, script: '''#!/bin/sh
+                                        chtag -r ${WORKSPACE}/${APP_NAME}/wazideploy-samples/application-manifest/application-manifest.yml
+                                    ''')
+                                    archiveArtifacts allowEmptyArchive: true,
+                                                    artifacts: '**/application-manifest.yml',
+                                                    onlyIfSuccessful: false
+                            }
+                        }
+                    //}
+                }
+            }
+        }
+        
+    }
+}

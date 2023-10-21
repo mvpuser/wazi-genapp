@@ -1,0 +1,338 @@
+// Agent labels
+def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'wazideploy-e2e-pipeline'
+
+// DBB Git repositories (For DBB 1.X)
+def zAppBuildGitRepo = 'https://github.com/IBM/dbb-zappbuild.git'
+def zAppBuildGitBranch = 'zAppBuild_2_x'
+def dbbGitRepo = 'https://github.com/IBM/dbb.git'
+def dbbGitBranch = 'main'
+def gitCredId = 'git_hub_cred'
+
+// Private
+def appName="cics-genapp"
+def verbose = false
+def hasBuildFiles = true
+def srcGitRepo =  null
+def srcGitBranch = null
+
+pipeline {
+
+    agent { label zOsAgentLabel }
+    
+    environment {
+        APP_NAME = "${appName}"
+        BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        DBB_HOME = "${env.DBB_HOME ? env.DBB_HOME : '/usr/lpp/IBM/dbb'}"
+        DBB_URL = "${env.DBB_URL ? env.DBB_URL : 'https://example.com:9443/dbb'}"
+        DBB_HLQ = "${env.DBB_HLQ ? env.DBB_HLQ : 'IBMUSER.GENAPP.DBBBUILD'}"
+        DBB_CRED = "${env.DBB_CRED ? env.DBB_CRED : '-id ADMIN -pw ADMIN'}"
+        GROOVYZ_BUILD_EXTRA_OPTS = "${env.GROOVYZ_BUILD_EXTRA_OPTS ? env.GROOVYZ_BUILD_EXTRA_OPTS : ''}"
+        DBB_BUILD_EXTRA_OPTS = "${env.DBB_BUILD_EXTRA_OPTS ? env.DBB_BUILD_EXTRA_OPTS : ''}"
+        PYTHON_INTERPRETER = "${env.PYTHON_INTERPRETER ? env.PYTHON_INTERPRETER : '/usr/lpp/IBM/cyp/v3r10/pyz/bin/python3'}"
+        ZOAU_HOME ="${env.ZOAU_HOME ? env.ZOAU_HOME : '/usr/lpp/IBM/zoautil'}"
+        ARTIFACTORY_URL  = "${env.ARTIFACTORY_URL  ? env.ARTIFACTORY_URL : 'https://example.com/artifactory'}"
+        ARTIFACTORY_CRED_ID = "${env.ARTIFACTORY_CRED_ID ? env.ARTIFACTORY_CRED_ID : 'artifactory_id'}"
+        ARTIFACTORY_REPO = "${env.ARTIFACTORY_REPO  ? env.ARTIFACTORY_REPO : 'repository'}"
+        ARTIFACTORY_REPO_PATH = "${env.ARTIFACTORY_REPO_PATH ? env.ARTIFACTORY_REPO_PATH : 'wazideploy/static' + appName}"
+        ARTIFACTORY_STATIC_BUILD_NAME = "${env.ARTIFACTORY_STATIC_BUILD_NAME ? env.ARTIFACTORY_STATIC_BUILD_NAME : appName + '-wazideploy-static-build'}"
+        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : ''}"
+     }
+     
+     parameters {
+       string(defaultValue: "1.0.0", description: 'Realese Version.', name: 'RELEASE_VERSION')
+       booleanParam(defaultValue: false, description: 'Display verbose output', name: 'VERBOSE')
+       choice(choices: ["--impactBuild", "--fullBuild"], description: 'DBB Build Type.', name: 'DBB_BUILD_TYPE')
+    }
+
+    options { skipDefaultCheckout(true) }
+
+    stages {
+        
+        stage('Git Clone/Refresh') {
+            steps {
+                script {
+                    verbose = env.VERBOSE && env.VERBOSE == 'true' ? true : false
+                    env.BUILD_VERBOSE = verbose ? '-v' : ''
+                    if ( verbose ) {
+                        echo sh(script: 'env|sort', returnStdout: true)
+                    }
+                    dir(appName) {
+                        srcGitRepo = scm.getUserRemoteConfigs()[0].getUrl()
+                        srcGitBranch = scm.branches[0].name
+                        if ( env.APP_GIT_BRANCH == null || env.APP_GIT_BRANCH == "") {
+                            srcGitBranch = scm.branches[0].name
+                            env.GIT_BRANCH = srcGitBranch
+                        } else
+                            srcGitBranch =  env.GIT_BRANCH
+                        def scmVars = null
+                        scmVars = checkout([$class: 'GitSCM', branches: [[name: srcGitBranch]],
+                                                doGenerateSubmoduleConfigurations: false,
+                                                submoduleCfg: [],
+                                                userRemoteConfigs: [[
+                                                                     url: srcGitRepo, credentialsId: gitCredId
+                                                                     ]]])
+                    }
+                    dir("dbb-zappbuild") {
+                        def scmVars =
+                            checkout([$class: 'GitSCM', branches: [[name: zAppBuildGitBranch]],
+                                    doGenerateSubmoduleConfigurations: false,
+                                    submoduleCfg: [],
+                                    userRemoteConfigs: [[
+                                        url: zAppBuildGitRepo,
+                            ]]])
+                    }
+                }
+            }
+        }
+
+        stage('DBB Build') {
+            steps {
+                script{
+                    // DBB Build
+                    if ( env.DBB_BUILD_TYPE == null )
+                        env.DBB_BUILD_TYPE = "--fullBuild"
+                    rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            CMD="$DBB_HOME/bin/groovyz $GROOVYZ_BUILD_EXTRA_OPTS\
+                                ${WORKSPACE}/dbb-zappbuild/build.groovy --logEncoding UTF-8 -w ${WORKSPACE}\
+                                --workDir ${WORKSPACE}/BUILD-${BUILD_NUMBER} --hlq ${DBB_HLQ} --url ${DBB_URL}\
+                                ${DBB_CRED} -d ${DBB_BUILD_TYPE} ${BUILD_VERBOSE} ${DBB_BUILD_EXTRA_OPTS}\
+                                --application ${APP_NAME} --sourceDir ${WORKSPACE}"
+                            echo $CMD
+                            $CMD
+                            exit $?
+                        ''')
+                    if ( rc != 0 )
+                        error("DBB build failed!!!")
+
+                    def files = findFiles(glob: "**BUILD-${BUILD_NUMBER}/**/buildList.txt")
+                    // Do not enter into some steps if nothing in the build list
+                    hasBuildFiles = files.length > 0 && files[0].length > 0
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/*.log,**/*.json,**/*.html',
+                                        excludes: '**/*clist',
+                                        onlyIfSuccessful: false
+                    }
+                }
+            }
+        }
+
+
+        stage('Package & Artifactory Upload') {
+           environment {
+              ARTI_CREDS = credentials("$ARTIFACTORY_CRED_ID")
+            }
+            steps {
+                script {
+                    if ( hasBuildFiles ) {
+                        writeFile file: "${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml", encoding: "UTF-8",
+                        text:"""artifact_repository:
+   # The type of the artifactory manager [artifactory|nexus]]
+   type: 'artifactory'
+   # The URL to the Artifactory Server
+   url: ${ARTIFACTORY_URL}
+   # Artifactory credentials
+   user: ${ARTI_CREDS_USR}
+   password: ${ARTI_CREDS_PSW}
+                             """
+                        if ( env.PYTHON_VIRTUAL_ENV_COMMAND == null  ){
+                            env.PYTHON_VIRTUAL_ENV_COMMAND = ""
+                        }
+
+                        if ( env.RELEASE_VERSION == null )
+                            env.RELEASE_VERSION = "1.0.0"
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                            then
+                               echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                               . $PYTHON_VIRTUAL_ENV_COMMAND
+                               export PYTHON_INTERPRETER="python3"
+                            else
+                               export PATH=$PATH:$HOME/.local/bin
+                            fi
+                            
+                            BUILD_OUTPUT_FOLDER=$(ls ${WORKSPACE}/BUILD-${BUILD_NUMBER} | grep "build.*[0-9]$" | tail -n 1)
+                            mkdir -p ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package
+                            
+                            cd ${WORKSPACE}
+                            CMD="${PYTHON_INTERPRETER}\
+                                   ${WORKSPACE}/${APP_NAME}/wazideploy-samples/python/dbb/dbb_prepare_local_folder.py\
+                                   --dbbBuildResult ${WORKSPACE}/BUILD-${BUILD_NUMBER}/${BUILD_OUTPUT_FOLDER}/BuildReport.json\
+                                   --workingFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package"
+                            echo $CMD
+                            $CMD
+                            if [ $? -ne 0 ]
+                            then
+                              exit $?
+                            fi
+                            
+                            CMD="wazideploy-package\
+                                    --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml\
+                                    --localFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package\
+                                    --repository  ${ARTIFACTORY_REPO}\
+                                    --repositoryPath  ${ARTIFACTORY_REPO_PATH}\
+                                    --buildName ${ARTIFACTORY_STATIC_BUILD_NAME}\
+                                    --buildNumber ${BUILD_NUMBER}\
+                                    --buildUrl "${BUILD_URL}"\
+                                    --manifestVersion "${RELEASE_VERSION}"\
+                                    --manifestName "${APP_NAME}"\
+                                    --manifestDescription "${APP_NAME}"\
+                                    --manifest ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package/application-manifest.yml\
+                                    --uploadType archive"
+                            echo $CMD
+                            $CMD
+                            if [ $? -ne 0 ]
+                            then
+                              exit $?
+                            fi
+                        ''')
+                        if ( rc != 0 )
+                            error("Uploading Package failed!!!")
+                     }
+                }
+            }
+        }
+        
+        stage('Deploy: Generate The Deployment Plan & Package') {
+            steps {
+                script {
+                    if ( hasBuildFiles ) {
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                            then
+                               echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                               . $PYTHON_VIRTUAL_ENV_COMMAND
+                               export PYTHON_INTERPRETER="python3"
+                            else
+                               export PATH=$PATH:$HOME/.local/bin
+                            fi
+                            cd ${WORKSPACE}
+                            CMD="wazideploy-generate\
+                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/deployment-method/deployment-method-static.yml\
+                                   --deploymentPlan  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
+                                   --deploymentPlanReport ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan-report.html\
+                                   --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml\
+                                   --packageInputFile ${ARTIFACTORY_URL}/${ARTIFACTORY_REPO}/${ARTIFACTORY_REPO_PATH}/${BUILD_NUMBER}/${APP_NAME}.${RELEASE_VERSION}.tar
+                                   --packageOutputFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/${APP_NAME}.${RELEASE_VERSION}.tar"
+                            echo $CMD
+                            $CMD
+                            rc=$?
+                            exit $rc
+                        ''')
+                        if ( rc != 0 )
+                          error("Generation Of Deployment Scripts Failed!!!")
+                     }
+                }
+            }
+        }
+        
+        
+        stage('Deploy: Execute The Deployment With Python/ZOAU') {
+            steps {
+                script {
+                    if ( hasBuildFiles ) {
+                        if ( env.WD_DEPLOY_ENV_FILE == null )
+                           env.WD_DEPLOY_ENV_FILE = "environment-zos.yml"
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            export ZOAU_HOME=${ZOAU_HOME}
+                            export PATH=${ZOAU_HOME}/bin:$PATH
+                            export LIBPATH=${ZOAU_HOME}/lib:${LIBPATH}
+                            if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                            then
+                               echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                               . $PYTHON_VIRTUAL_ENV_COMMAND
+                               export PYTHON_INTERPRETER="python3"
+                            else
+                               export PATH=$PATH:$HOME/.local/bin
+                            fi
+                            CMD="wazideploy-deploy\
+                                --deploymentPlan  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
+                                --packageInputFile  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/${APP_NAME}.${RELEASE_VERSION}.tar\
+                                --envFile   ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/environment-conf/python/${WD_DEPLOY_ENV_FILE}\
+                                --evidencesFileName ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/evidences/evidence.yml\
+                                --workingFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy"
+                            echo $CMD
+                            $CMD 
+                            rc=$?
+                            # For jenkins artifact upload
+                            chtag -r ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml
+                            chtag -r ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan-report.html
+                            chtag -r  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/evidences/evidence.yml
+                            exit $rc
+                      ''')
+                      if ( rc != 0 )
+                          error("Excecution Of Deployment Scripts Failed!!!")
+                     }
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/deployment-plan.yml,**/deployment-plan-report.html,**/evidence.yml',
+                                        onlyIfSuccessful: false
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy: Deployment Report') {
+            steps {
+                script {
+                    if ( hasBuildFiles ) {
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                            then
+                               echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                               . $PYTHON_VIRTUAL_ENV_COMMAND
+                               export PYTHON_INTERPRETER="python3"
+                            else
+                               export PATH=$PATH:$HOME/.local/bin
+                            fi
+                            # Index Evidences
+                            CMD="wazideploy-evidence\
+                                --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                                --dataFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/evidences\
+                                i"
+                            echo $CMD
+                            $CMD 
+                            if [ $? -ne 0 ]
+                            then
+                              exit $?
+                            fi
+                            # Query Index
+                            CMD="wazideploy-evidence\
+                              --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                              --template ${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/templates/full-report.yml\
+                              --output=${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/deployment-report.html\
+                              r\
+                              renderer=${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/renderers/full-report.html"
+                            echo $CMD
+                            $CMD 
+                            if [ $? -ne 0 ]
+                            then
+                              exit $?
+                            fi
+                            chtag -r ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/deployment-report.html
+                      ''')
+                      if ( rc != 0 )
+                          error("Excecution Of Deployment Report Failed!!!")
+                     }
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/deployment-report.html',
+                                        onlyIfSuccessful: false
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+
+# Generally files can use ASCII - perform automatic LF normalization
+*                     zos-working-tree-encoding=iso8859-1 git-encoding=iso8859-1 text=auto
+
+# Always need git control files in ASCII
+.gitattributes        working-tree-encoding=iso8859-1     git-encoding=iso8859-1
+.gitignore            working-tree-encoding=iso8859-1     git-encoding=iso8859-1
+
+# Treat certain files as binary
+*.jpg                 zos-working-tree-encoding=BINARY    git-encoding=BINARY     binary
+
+#
+*.cpy zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.cbl zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.bms zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.pli zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.mfs zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.bnd zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.lnk zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.rex zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+#.txt zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.groovy zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.sh zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.properties zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.asm zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.jcl zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.data zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.exec zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.mac zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.c zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.opt zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.h zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.plx zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.copy zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.lmod zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.dtl zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.config zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.azucfg zos-working-tree-encoding=utf-8 git-encoding=utf-8
+*.bzucfg zos-working-tree-encoding=ibm-1047 git-encoding=utf-8
+*.plbck binary
+*.tar binary

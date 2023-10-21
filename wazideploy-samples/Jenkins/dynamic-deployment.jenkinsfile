@@ -1,0 +1,258 @@
+// Agent labels
+def linuxAgentLabel = env.LINUX_AGENT_LABEL ? env.LINUX_AGENT_LABEL : 'master'
+
+// DBB Git repositories (For DBB 1.X)
+def zAppBuildGitRepo = 'https://github.com/IBM/dbb-zappbuild.git'
+def zAppBuildGitBranch = 'zAppBuild_2_x'
+def dbbGitRepo = 'https://github.com/IBM/dbb.git'
+def dbbGitBranch = 'main'
+def gitCredId = 'git_hub_cred'
+
+// Private
+def appName='cics-genapp'
+def verbose = false
+def hasBuildFiles = true
+def srcGitRepo =  null
+def srcGitBranch = null
+
+pipeline {
+
+    agent { label linuxAgentLabel }
+    environment {
+        APP_NAME = "${appName}"
+        ARTIFACTORY_URL  = "${env.ARTIFACTORY_URL  ? env.ARTIFACTORY_URL : 'https://example.com/artifactory'}"
+        ARTIFACTORY_CRED_ID = "${env.ARTIFACTORY_CRED_ID ? env.ARTIFACTORY_CRED_ID : 'artifactory_id'}"
+        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : ''}"
+        ANSIBLE_PLAYBOOK_OPTS = "${env.ANSIBLE_PLAYBOOK_OPTS ? env.ANSIBLE_PLAYBOOK_OPTS : ''}"
+     }
+     
+     parameters {
+       booleanParam(defaultValue: false, description: 'Full Deployment', name: 'FULL_DEPLOY')
+       booleanParam(defaultValue: false, description: 'Display verbose output', name: 'VERBOSE')
+    }
+
+    options { skipDefaultCheckout(true) }
+
+    stages {
+        
+        stage('Git Clone/Refresh') {
+            steps {
+                script {
+                    verbose = env.VERBOSE && env.VERBOSE == 'true' ? true : false
+                    env.ANSIBLE_VERBOSE_OPTS = verbose ? '-vvvvv -e wd_log=True' : ''
+                    if ( verbose ) {
+                        echo sh(script: 'env|sort', returnStdout: true)
+                    }
+                    sh("rm -rf ${env.WORKSPACE}/${appName}")
+                    dir(appName) {
+                        srcGitRepo = scm.getUserRemoteConfigs()[0].getUrl()
+                        srcGitBranch = scm.branches[0].name
+                        if ( env.APP_GIT_BRANCH == null || env.APP_GIT_BRANCH == "") {
+                            srcGitBranch = scm.branches[0].name
+                            env.GIT_BRANCH = srcGitBranch
+                        } else
+                            srcGitBranch =  env.GIT_BRANCH
+                        def scmVars = null
+                        scmVars = checkout([$class: 'GitSCM', branches: [[name: srcGitBranch]],
+                                                doGenerateSubmoduleConfigurations: false,
+                                                submoduleCfg: [],
+                                                userRemoteConfigs: [[
+                                                                     url: srcGitRepo, credentialsId: gitCredId
+                                                                     ]]])
+                    }
+                }
+            }
+        }
+
+        stage('Deploy: Generate The Deployment Plan & Package') {
+           environment {
+              ARTI_CREDS = credentials("$ARTIFACTORY_CRED_ID")
+            }
+            steps {
+                script{
+                    if ( env.FULL_DEPLOY && env.FULL_DEPLOY == 'true' )
+                        env.CURRENT_DEPLOYMENT_STATE=""
+                    else
+                        env.CURRENT_DEPLOYMENT_STATE="-cds ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/deployment-state/deployment-state.yml"
+
+                    writeFile file: "${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml", encoding: "UTF-8",
+                    text:"""artifact_repository:
+   # The type of the artifactory manager [artifactory|nexus]]
+   type: 'artifactory'
+   # The URL to the Artifactory Server
+   url: ${ARTIFACTORY_URL}
+   # Artifactory credentials
+   user: ${ARTI_CREDS_USR}
+   password: ${ARTI_CREDS_PSW}
+                             """
+                    if ( env.PYTHON_VIRTUAL_ENV_COMMAND == null  ){
+                        env.PYTHON_VIRTUAL_ENV_COMMAND = ""
+                    }
+
+                    rc = sh (returnStatus: true, script: '''#!/bin/sh
+                        cd ${WORKSPACE}
+                        if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                        then
+                           echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                           . $PYTHON_VIRTUAL_ENV_COMMAND
+                        else
+                           export PATH=$PATH:$HOME/.local/bin
+                        fi
+                        CMD="wazideploy-generate\
+                               --deploymentMethod  ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/deployment-method/deployment-method.yml\
+                               --manifests ${WORKSPACE}/${APP_NAME}/wazideploy-samples/application-manifest/application-manifest.yml\
+                               --deploymentPlan ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
+                               --deploymentPlanReport ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan-report.html\
+                               --deploymentState ${WORKSPACE}/BUILD-${BUILD_NUMBER}/merged_deployment-state.yml\
+                               ${CURRENT_DEPLOYMENT_STATE}\
+                               --packageOutputFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/package.tar\
+                               --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml"
+                        echo $CMD
+                        $CMD
+                        rc=$?
+                        echo ""
+                        exit $rc
+                    ''')
+                    if ( rc != 0 )
+                        error("Generation Of Deployment Scripts Failed!!!")
+
+                }
+            }
+        }
+
+
+        stage('Deploy: Execute The Deployment With Ansible for z/OS') {
+            steps {
+                script {
+                    // Deploy
+                    rc = sh (returnStatus: true, script: '''#!/bin/sh
+                        cd ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/environment-conf/ansible
+                        echo $PWD
+                        rm -rf evidences
+                        CMD="ansible-playbook deploy.yml -i inventories\
+                                -e wd_deployment_plan_file=${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
+                                -e wd_package_file=${WORKSPACE}/BUILD-${BUILD_NUMBER}/package.tar\
+                                ${ANSIBLE_PLAYBOOK_OPTS} ${ANSIBLE_VERBOSE_OPTS}"
+                        echo $CMD
+                        $CMD
+                        rc=$?
+                        exit $rc
+                    ''')
+                    if ( rc != 0 )
+                        error("Deploy Ansible Deployment Failed!!!")
+                    // Git Push
+                    rc = sh (returnStatus: true, script: '''#!/bin/sh
+                         echo ""
+                         cd ${WORKSPACE}/${APP_NAME}
+                         cp ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/environment-conf/ansible/evidences/* wazideploy-samples/external-repos/evidences
+                         cp ${WORKSPACE}/BUILD-${BUILD_NUMBER}/merged_deployment-state.yml ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/deployment-state/deployment-state.yml
+                         git add wazideploy-samples/external-repos/deployment-state/deployment-state.yml
+                         git add wazideploy-samples/external-repos/evidences/*
+                         git commit -am "Commit new deployment state to ${GIT_BRANCH} branch for the current environment"
+                         git push origin HEAD:${GIT_BRANCH}
+                        ''')
+                    if ( rc != 0 )
+                        error("Git Push Failed!!!")
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/deployment-plan.yml,**/deployment-plan-report.html,**/package.tar',
+                                        onlyIfSuccessful: false
+                    }
+                    dir("${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/environment-conf/ansible/evidences") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/*.yml',
+                                        onlyIfSuccessful: false
+                    }
+                }
+            }
+        }
+
+        stage('Deploy: Deployment Report') {
+            steps {
+                script {
+                    if ( hasBuildFiles ) {
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            mkdir -p ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index
+                            mkdir -p ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/reports
+                            # Index Evidences
+                            CMD="wazideploy-evidence\
+                                --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                                --dataFolder ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/evidences\
+                                i"
+                            echo $CMD
+                            $CMD
+                            rc=$? 
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                            
+                            # Full Report
+                            CMD="wazideploy-evidence\
+                              --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                              --template ${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/templates/full-report.yml\
+                              --output=${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/reports/deployment-report.html\
+                              r\
+                              renderer=${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/renderers/full-report.html"
+                            echo $CMD
+                            $CMD
+                            rc=$? 
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                            
+                            # Where LGACDB02 is deployed
+                            CMD="wazideploy-evidence\
+                              --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                              --template ${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/templates/deployed-component-where.yml\
+                              --output=${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/reports/deployed-lgacdb02-where.csv\
+                              r\
+                              renderer=${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/renderers/deployed-component-where.csv\
+                              component=LGACDB02"
+                            echo $CMD
+                            $CMD 
+                            rc=$? 
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                            
+                            # Versions of the deployed components for the current environnment
+                            CMD="wazideploy-evidence\
+                              --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                              --template ${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/templates/environment-deployed-component-version.yml\
+                              --output=${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/reports/environment-deployed-component-version.html\
+                              r\
+                              renderer=${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/renderers/environment-deployed-component-version.html\
+                              environment_name=zos_host_01"
+                            echo $CMD
+                            $CMD 
+                            rc=$? 
+                            if [ $rc -ne 0 ]
+                            then
+                              exit $rc
+                            fi
+                            
+                      ''')
+                      if ( rc != 0 )
+                          error("Excecution Of Deployment Report Failed!!!")
+                     }
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                        archiveArtifacts allowEmptyArchive: true,
+                                        artifacts: '**/deployment-report.html,**/deployed-lgacdb02-where.csv,**/environment-deployed-component-version.html',
+                                        onlyIfSuccessful: false
+                    }
+                }
+            }
+        }
+    }
+}

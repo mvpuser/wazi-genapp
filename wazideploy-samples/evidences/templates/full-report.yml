@@ -1,0 +1,25 @@
+#*******************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corp. 2023. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#*******************************************************************************
+---
+select:
+  kind: Evidence
+#{% if environment_name is defined %}
+  metadata:
+     annotations:
+        environment_name: {{environment_name}}
+#{% endif %}
+output:
+  unfold: true
+  fields:
+    ymli_full_file_path: true
+    ymli_data_fields: true
+    deploy_timestamp: -1
+#{% if renderer is defined %}
+renderer: {{renderer}}
+#{% endif %}

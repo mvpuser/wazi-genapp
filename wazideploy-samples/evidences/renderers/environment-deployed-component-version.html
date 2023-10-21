@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+    Licensed Materials - Property of IBM
+    (c) Copyright IBM Corporation 2023. All Rights Reserved.
+
+    Note to U.S. Government Users Restricted Rights:
+    Use, duplication or disclosure restricted by GSA ADP Schedule
+    Contract with IBM Corp.
+ -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+<title>IBM Deploy Evidences</title>
+<style type="text/css">
+body {
+    font: 12px Arial, sans-serif;
+}
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+    vertical-align: top;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+tr.even {
+    background-color: #f2f2f2
+}
+th {
+    background-color: #ddd;
+    color: black !important;
+}
+td.label {
+    font-weight: bold;
+}
+span.vlabel {
+    float: left;
+    font-weight: bold;
+    width: 10em;
+    margin-left: 20px;
+}
+span.vlabel_ok {
+    font-weight: bold;
+    color: green;
+}
+
+span.vlabel_skipped {
+    font-weight: bold;
+    color: orange;
+}
+
+span.vlabel_ko {
+    font-weight: bold;
+    color: red;
+}
+
+.bottomRight {
+   float:right;
+   text-align:right;
+   font: 10px Arial, sans-serif;
+}
+.dep {
+    font: 11px Arial, sans-serif;
+}
+.depType {
+    font: 9px Arial, sans-serif;
+    background-color: #81C4E8;
+}
+</style>
+</head>
+<body>
+<div id="main">
+{% set components = results | list %}
+<hr>
+<h1>Components deployed in the environment {{environment_name}}</h1>
+<hr>
+<table border='1px solid #A9A9A9' style='width:100%;'><tr><th id=\"name\">Component</th><th id=\"name\">Version</th><th id=\"version\">Deploy Date</th></tr>
+{%for component in components%}
+<tr>
+<td>
+{{ component.name }}{%for property in component.properties -%}{% if 'type' in property.key -%}.{{ property.value }}<br>{% endif %}{% endfor %}
+</td>
+<td>
+{{ component.ymli_parent.ymli_parent.ymli_parent.ymli_parent.metadata.version }}
+</td>
+<td>
+{{ component.ymli_parent.ymli_parent.ymli_parent.ymli_parent.metadata.annotations.deploy_timestamp }}
+</td>
+</tr>
+{% endfor %}
+</table>
+</div></body></html>

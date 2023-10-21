@@ -1,0 +1,86 @@
+---
+apiVersion: deploy.ibm.com/v1
+kind: DeploymentMethod
+metadata:
+  name: "CICS"
+  version: "1.0.0"
+  description: |
+    This deployment method can be use for the deployment of an CICS application.
+  annotations:
+    deployVersion: "1.0.0"
+
+activities:
+  - name: PACKAGE
+    description: |
+      This activity handle the package
+    actions:
+        - name: PACKAGE
+          steps:
+          - name: PACKAGE
+
+  - name: DEPLOY_MODULES
+    description: |
+      This activity is dedicated to the deployment of the artifacts into the PDS 
+    actions:
+        - name: UPDATE
+          description: |
+            This action is applicable when we udpate artifacts.
+          states:
+             - UNDEFINED
+          steps:
+          - name: MEMBER_ARCHIVE
+            description: |
+              This step do the copy of artifacts into PDSs
+          - name: MEMBER_RESTORE
+            description: |
+              This step do the copy of artifacts into PDSs
+            plan_tags:
+            - restore
+            - never
+          - name: MEMBER_COPY
+            description: |
+              This step do the copy of artifacts into PDSs
+    types:
+      - name: 'DBRM'
+      - name: 'LOAD'
+      - name: 'CICSLOAD'
+      - name: 'MAPLOAD'
+      - name: 'JCL'
+    is_artifact: True
+
+  - name: DB2
+    description: |
+      This activity is dedicated to DBRM bind modules
+    actions:
+        - name: UPDATE
+          description: |
+            This action is applicable when we update a DBRM modules
+          states:
+             - UNDEFINED
+          steps:
+          - name: DB2_BIND_PACKAGE
+          - name: DB2_BIND_PLAN
+    types:
+      - name: 'DBRM'
+    is_artifact: True
+    plan_tags:
+    - restore
+        
+  - name: CICS
+    description: |
+       This activity is dedicated to CICS load modules
+    actions:
+        - name: UPDATE
+          states:
+             - UNDEFINED
+          steps:
+          - name: PROG_UPDATE
+            properties:
+            - key: "template"
+              value: "cics_cmci_prog_update"
+    types:
+      - name: 'CICSLOAD'
+      - name: 'MAPLOAD'
+    is_artifact: True
+    plan_tags:
+    - restore

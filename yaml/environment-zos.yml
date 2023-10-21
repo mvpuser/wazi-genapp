@@ -1,0 +1,189 @@
+#*******************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corp. 2023. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#*******************************************************************************
+---
+apiVersion: deploy.ibm.com/v1
+kind: Environment
+metadata:
+  name: "tvt7111.svl.ibm.com"
+  version: 1.0.0
+ 
+spec:
+
+  default_cics_cmci_action: "NEWCOPY"
+
+  cics_sys_def:
+     cicsplex: "CICS01"
+     cmci_url: "http://127.0.0.1:1490"
+     cmci_user: "RLAM"   # no racf in cics01 - no password check
+     cmci_password: "XYZ"
+     csd_group: "GENASAP"
+
+  default_db2_sdsnload: "DSN.V12R1M0.SDSNLOAD"
+  default_pkg_jobcard: "WAZIBPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID"
+  default_plan_jobcard: |
+    WAZIBPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+    /* ---
+  default_db2_user: "{{ extra_vars.db2_user if extra_vars.db2_user is defined else 'RLAM' }}"
+  default_db2_action: "REPLACE"
+  db2_sys_def:
+     package_maxrc: 4
+     plan_maxrc: 4
+     user: "{{ env.spec.default_db2_user }}"
+     package: WAZI_COLLECTION
+     plan: GENAONE1
+     qualifier: GENWAZI
+     subsys: DBC1
+     package_jobcard: "{{env.spec.default_pkg_jobcard}}"
+     plan_jobcard: "{{env.spec.default_plan_jobcard}}"
+     package_action: "{{env.spec.default_db2_action}}"
+     plan_action: "{{env.spec.default_db2_action}}"
+     sdsnload: "{{env.spec.default_db2_sdsnload}}"
+     plan_pklist: '*.WAZI_COLLECTION.*'
+
+  common_pds_load_spec:
+     type: LIBRARY
+     primary_space: 1CYL
+     secondary_space: 2CYL
+     record_format: U
+     record_length: 0
+  common_pds_binary_spec:
+     type: LIBRARY
+     primary_space: 1CYL
+     secondary_space: 2CYL
+     record_format: FB
+     record_length: 80
+  common_pds_txt_spec:
+     type: LIBRARY
+     primary_space: 1CYL
+     secondary_space: 2CYL
+     record_format: FB
+     record_length: 80
+  seq_spec:
+     type: SEQ
+     primary_space: 5TRK
+     secondary_space: 2TRK
+     record_format: FB
+     record_length: 20
+#     replace: yes
+  seq_spec_a:
+     type: SEQ
+     primary_space: 2TRK
+     secondary_space: 1TRK
+     record_format: FB
+     record_length: 15
+
+  hlq: "{{ extra_vars.hlq if extra_vars.hlq is defined else 'RLAM.GENWAZI.PROD' }}"
+  uss_root: "{{ extra_vars.uss_root if extra_vars.uss_root is defined else '/tmp/uss_root' }}"
+  types:
+    - pattern: .*\.LOAD$
+      dataset: "{{ env.spec.hlq }}.LOADLIB"
+      dataset_backup: "{{ env.spec.hlq }}.BACK.LOADLIB"
+      spec: "{{ env.spec.common_pds_load_spec }}"
+      is_load: True
+    - pattern: .*\.CICSLOAD$
+      dataset: "{{ env.spec.hlq }}.LOADLIB"
+      dataset_backup: "{{ env.spec.hlq }}.BACK.LOADLIB"
+      spec: "{{ env.spec.common_pds_load_spec }}"
+      is_load: True
+      cics_systems:
+      - "{{ env.spec.cics_sys_def }}"
+    - pattern: .*\.MAPLOAD$
+      dataset: "{{ env.spec.hlq }}.LOADLIB"
+      dataset_backup: "{{ env.spec.hlq }}.BACK.LOADLIB"
+      spec: "{{ env.spec.common_pds_load_spec }}"
+      is_load: True
+      cics_systems:
+      - "{{ env.spec.cics_sys_def }}"
+    - pattern: .*.DBRM$
+      dataset: "{{ env.spec.hlq }}.DBRM"
+      dataset_backup: "{{ env.spec.hlq }}.BACK.DBRM"
+      spec: "{{ env.spec.common_pds_binary_spec }}"
+      is_binary: True
+      db2_systems:
+      - "{{ env.spec.db2_sys_def }}"
+    - pattern: .*.JCL$
+      dataset: "{{ env.spec.hlq }}.JCL"
+      dataset_backup: "{{ env.spec.hlq }}.BACK.JCL"
+      spec: "{{ env.spec.common_pds_txt_spec }}"
+      #encoding:
+      #  from: UTF-8
+      #  to: IBM-1047
+    - pattern: .*.BIN$
+      directory: "{{ env.spec.uss_root }}/bin/"
+      directory_backup: "{{ env.spec.uss_root }}/bin/back/"
+      dest_mode: 0777
+      artifact_mode: 0755
+      is_binary: True
+    - pattern: .*.SH$
+      directory: "{{ env.spec.uss_root }}/sh/"
+      directory_backup: "{{ env.spec.uss_root }}/sh/back/"
+      dest_mode: 0777
+      artifact_mode: 0755
+    - pattern: .*.TXT$
+      directory: "{{ env.spec.uss_root }}/txt/"
+      directory_backup: "{{ env.spec.uss_root }}/txt/back/"
+      encoding:
+        from: UTF-8
+        to: IBM-1047
+      dest_mode: 0777
+      artifact_mode: 0755
+    - pattern: .*.SEQ$
+      dataset_prefix: "{{ env.spec.hlq }}.SEQ"
+      dataset_backup_prefix: "{{ env.spec.hlq }}.BACK.SEQ"
+      encoding:
+        from: UTF-8
+        to: IBM-037
+      is_binary: False
+      is_sequential: True
+      spec: "{{env.spec.seq_spec}}"
+    - pattern: .*.SEQA$
+      dataset_prefix: "{{ env.spec.hlq }}.SEQ"
+      dataset_backup_prefix: "{{ env.spec.hlq }}.BACK.SEQ"
+      encoding:
+        from: UTF-8
+        to: IBM-037
+      is_binary: False
+      is_sequential: True
+      spec: "{{env.spec.seq_spec_a}}"
+
+# Variables for system_command template
+  system_command_cmd_default: "D T"
+
+# Variables for shell_command template
+  shell_command_cmd_default: |
+   #!/bin/sh
+   echo "hello world"
+
+# Variables for job_submit template
+  job_submit_default:
+     src: '{{ env.spec.hlq }}.JCL(HELLO1)'
+     max_rc: 4
+#     wait_time_s: 30
+
+# Variables for ds_create template
+  ds_create_lsds_default:
+  - name: '{{ env.spec.hlq  }}.LIB01'
+    spec: '{{env.spec.common_pds_load_spec}}'
+  - name: '{{ env.spec.hlq  }}.SEQ01'
+    spec: '{{env.spec.seq_spec}}'
+  - name: '{{ env.spec.hlq  }}.PDS01'
+    spec: '{{env.spec.common_pds_load_spec}}'
+
+# Variables for ds_delete template
+  ds_delete_lsds_default:
+  - name: '{{ env.spec.hlq  }}.LIB01(MBR1)'
+    type: MEMBER
+  - name: '{{ env.spec.hlq  }}.SEQ01'
+  - name: '{{ env.spec.hlq  }}.PDS01'
+
+# Variables for template building block
+  template_name_default:
+     src: "HELLO-jcl.j2"
+     dest: "/tmp/my_jcl/HELLO.jcl"
+     mode: 0755

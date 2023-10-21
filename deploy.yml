@@ -1,0 +1,51 @@
+#*******************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corp. 2023. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#*******************************************************************************
+---
+- hosts: "{{ wd_hosts if wd_hosts is defined else 'all' }}"
+  gather_facts: "{{ wd_gather_facts if wd_gather_facts is defined else 'no' }}"
+  serial: "{{ wd_serial if wd_serial is defined else 5 }}"
+  tasks:
+      - name: Display Evidences
+        shell: |
+          #!/bin/bash
+          python3 -V
+        delegate_to: localhost
+      - name: Install Wazi Deploy
+        ansible.builtin.pip:
+          name: /runner/project/wazideploy-0.10.0-py3.9-none-any.whl 
+        delegate_to: localhost
+        
+      - name: Generate Package and Deployment Plan
+        shell: |
+          #!/bin/bash
+          cd /runner/project
+          wazideploy-generate\
+            --deploymentMethod ./wazideploy-samples/external-repos/deployment-method/deployment-method-static.yml\
+            --manifests ./wazideploy-samples/application-manifest/application-manifest-static.yml\
+            --deploymentPlan ./deployment-plan.yml\
+            --deploymentPlanReport ./deployment-plan-report.html\
+            --deploymentState ./merged-deployment-state.yml\
+            --packageOutputFile ./package.tar\
+            --configFile ./config.yml
+        delegate_to: localhost
+
+      - set_fact:
+          wd_deployment_plan_file: ./deployment-plan.yml
+          wd_package_file: ./package.tar
+
+      - import_role:
+          name: ibm.ibm_zos_wazi_deploy.zos_deploy
+          
+      - name: Display Evidences
+        shell: |
+          #!/bin/bash
+          cat /runner/project/ansible.cfg
+          cat {{wd_evidence_file}}
+        delegate_to: localhost
+          

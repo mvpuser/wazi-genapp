@@ -1,0 +1,38 @@
+#*******************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corp. 2023. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#*******************************************************************************
+---
+select:
+  ymli_category~: "^ activities:[0-9]* actions:[0-9]* steps:[0-9]* artifacts:[0-9]* $"
+  ymli_parent:
+     kind: Evidence
+     metadata:
+       annotations:
+         environment_name: "{{environment_name}}"
+     status: "Ok"
+     ymli_level: 0
+output:
+  fields:
+    name: true
+    hash: true
+    properties:
+       key: true
+       value: true
+    ymli_parent:
+      ymli_parent:
+        ymli_parent:
+          ymli_parent:
+            metadata:
+              version: -1
+              annotations:
+                 deploy_timestamp: true
+  unique:
+    hash: true
+#{% if renderer is defined %}
+renderer: {{renderer}}
+#{% endif %}

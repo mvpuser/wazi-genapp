@@ -1,0 +1,48 @@
+#*******************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corp. 2023. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#*******************************************************************************
+---
+select:
+  kind: Evidence
+  metadata:
+     name: "{{manifest_name}}"
+     version: "{{manifest_version}}"
+     #{% if environment is defined %}
+     annotations:
+        environment_name: "{{ environment }}"
+     #{% endif %}
+output:
+  format:
+    flatten: false
+    syntax: json
+  fields:
+    ymli_full_file_path: true
+    metadata:
+      name: true
+      version: true
+      annotations:
+         environment_name: true
+         deploy_timestamp: true
+    deploy_timestamp: -1
+    manifests:
+      name: true
+      description: true
+      version: true
+      annotations:
+         creation_timestamp: true
+         scm:
+            uri: true 
+            branch: true
+            short_commit: true
+         dbb:
+            build_result_uri: true
+         package:
+            uri: true
+#{% if renderer is defined %}
+renderer: {{renderer}}
+#{% endif %}

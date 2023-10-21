@@ -1,0 +1,13 @@
+---
+collections:
+  # Install a collection from Ansible Galaxy.
+  - name: ibm.ibm_zos_core
+    version: "1.6.0"
+    source: https://galaxy.ansible.com
+  - name: ibm.ibm_zos_cics
+    version: "1.0.4"
+    source: https://galaxy.ansible.com
+  - name: community.general
+    source: https://galaxy.ansible.com
+  - name: /var/lib/awx/projects/_8__genapp/ibm-ibm_zos_wazi_deploy-0.10.0.tar.gz
+    type: file

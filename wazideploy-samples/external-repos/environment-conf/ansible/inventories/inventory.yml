@@ -1,0 +1,14 @@
+#*******************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corp. 2023. All Rights Reserved.
+#
+# Note to U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#*******************************************************************************
+all:
+  hosts:
+    zos_host_01:
+      ansible_host: 9.30.222.103
+      ansible_user: JENKINS
+      ansible_ssh_port: 222

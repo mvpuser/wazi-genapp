@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--
+    Licensed Materials - Property of IBM
+    (c) Copyright IBM Corporation 2023. All Rights Reserved.
+
+    Note to U.S. Government Users Restricted Rights:
+    Use, duplication or disclosure restricted by GSA ADP Schedule
+    Contract with IBM Corp.
+ -->
+
+{% macro render_result(result, indent=0, class='result') -%}
+{% if result is string %}
+{{result | replace("\n","<br>") | safe }}<br>
+{% elif result is mapping %}
+<ul style="margin-left: {{indent}}px;padding-left: 0;">
+{% for key, value in result.items() %}
+<span class='vlabel_ko'><b>{{key}}</b></span>:
+{% call render_result(value, 10 ) %}{% endcall %}
+{% endfor %}
+</ul>
+{% elif result is iterable %}
+<ul style="margin-left: {{indent}}px;padding-left: 0;">
+{% for value in result %}
+{% call render_result(value, 10 ) %}{% endcall %}
+{% endfor %}
+</ul>
+{% else %} 
+{{ result | replace("\n","<br>") | safe  }}<br>
+{% endif %}
+{{ caller() }}
+{%- endmacro %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+<title>IBM Deploy Evidences</title>
+<style type="text/css">
+body {
+    font: 12px Arial, sans-serif;
+}
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+    vertical-align: top;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+tr.even {
+    background-color: #f2f2f2
+}
+th {
+    background-color: #ddd;
+    color: black !important;
+}
+td.label {
+    font-weight: bold;
+}
+span.vlabel {
+    float: left;
+    font-weight: bold;
+    width: 10em;
+    margin-left: 20px;
+}
+span.vlabel_ok {
+    font-weight: bold;
+    color: green;
+}
+
+span.vlabel_skipped {
+    font-weight: bold;
+    color: orange;
+}
+
+span.vlabel_ko {
+    font-weight: bold;
+    color: red;
+}
+
+.bottomRight {
+   float:right;
+   text-align:right;
+   font: 10px Arial, sans-serif;
+}
+.dep {
+    font: 11px Arial, sans-serif;
+}
+.depType {
+    font: 9px Arial, sans-serif;
+    background-color: #81C4E8;
+}
+</style>
+</head>
+<body>
+<script type="text/javascript">
+function toggle(log, text)
+{
+    if (document.getElementById(text).text == 'Show Log')
+        document.getElementById(text).text = 'Hide Log';
+    else
+        document.getElementById(text).text = 'Show Log';
+
+    if (document.getElementById(log).style.display == 'none')
+        document.getElementById(log).style.display = 'block';
+    else
+        document.getElementById(log).style.display = 'none';
+};
+</script>
+
+<div id="main">
+{% set deployments = results | list %}
+<hr>
+<h1>Deployments List</h1>
+<hr>
+<table border='1px solid #A9A9A9' style='width:100%;'><tr><th id=\"name\">Status</th><th id=\"name\">Name</th><th id=\"version\">Version</th><th id=\"deploydate\">Deployment Date</th><th id=\"environment\">Environment</th></tr>
+{%for deployment in deployments%}
+<tr>
+<td>
+{% if 'Ok' in deployment.status -%}
+<span class='vlabel_ok'>Success</span></br>
+{% elif 'Skipped' in deployment.status -%}
+<span class='vlabel_skipped'>Skipped</span></br>
+{% else %}
+<span class='vlabel_ko'>Failed</span><br>
+{% endif %}
+</td>
+<td><a href="#{{deployment.metadata.annotations.deploy_timestamp}}">{{ deployment.metadata.name }}</a></td>
+{% if deployment.metadata.version -%}
+<td>{{ deployment.metadata.version }}</td>
+{% else %}
+<td></td>
+{% endif %}
+<td>{{ deployment.metadata.annotations.deploy_timestamp }}</td>
+<td>{{ deployment.metadata.annotations.environment_name }}</td>
+</tr>
+{% endfor %}
+</table>
+{%for deployment in deployments%}
+<a id="{{deployment.metadata.annotations.deploy_timestamp}}"></a>
+<hr>
+{% if deployment.metadata.version -%}
+<h1>Deployment {{ deployment.metadata.name }} Version {{ deployment.metadata.version }}</h1>
+{% else %}
+<h1>Deployment {{ deployment.metadata.name }}</h1>
+{% endif %}
+<hr>
+<h2>Deployment Information:</h2>
+<span class='vlabel'>Name </span>: {{ deployment.metadata.name }}</br>
+{% if deployment.metadata.version -%}
+<span class='vlabel'>Version </span>: {{ deployment.metadata.version }}</br>
+{% endif %}
+<span class='vlabel'>Deployment Date </span>: {{ deployment.metadata.annotations.deploy_timestamp }}</br>
+<span class='vlabel'>Environment </span>: {{ deployment.metadata.annotations.environment_name }}</br>
+<span class='vlabel'>Evidence File </span>: {{ deployment.ymli_full_file_path }}</br>
+
+{% if 'Ok' in deployment.status -%}
+<span class='vlabel'>Status </span>: <span class='vlabel_ok'>Success</span></br>
+{% elif 'Skipped' in deployment.status -%}
+<span class='vlabel'>Status </span>: <span class='vlabel_skipped'>Skipped</span></br>
+{% else %}
+<span class='vlabel'>Status </span>: <span class='vlabel_ko'>Failed</span><br>
+{% endif %}
+{% if deployment.manifests is defined -%}
+<h2>Manifests:</h2>
+{%for manifest in deployment.manifests%}
+<span class='vlabel'>Name </span>: {{ manifest.name }}</br>
+{% if manifest.version is defined -%}
+<span class='vlabel'>Version </span>: {{ manifest.version }}</br>
+{% endif %}
+{% if manifest.description is defined -%}
+<span class='vlabel'>Description </span>: {{ manifest.description }}</br>
+{% endif %}
+{% if manifest.annotations.dbb is defined -%}
+<span class='vlabel'>DBB Build Result </span>: <a href='{{ manifest.annotations.dbb.build_result_uri }}' target=_other>{{ manifest.annotations.dbb.build_result_uri }}</a></br>
+{% endif %}
+{% if manifest.annotations.scm is defined -%}
+<span class='vlabel'>Scm </span>:</br>
+<span class='vlabel'>&nbsp;&nbsp;Uri </span>:  <a href='{{manifest.annotations.scm.uri  | replace("git@github.com:","https://github.com/") | replace(".git","") }}/commit/{{manifest.annotations.scm.short_commit}}' target=_other>{{manifest.annotations.scm.uri | replace("git@github.com:","https://github.com/") }}</a></br>
+<span class='vlabel'>&nbsp;&nbsp;Branch </span>: {{manifest.annotations.scm.branch }}</br>
+<span class='vlabel'>&nbsp;&nbsp;Short Commit </span>: {{manifest.annotations.scm.short_commit}}</br>
+{% endif %}
+{% if manifest.annotations.package is defined -%}
+<span class='vlabel'>Package </span>:</br>
+<span class='vlabel'>&nbsp;&nbsp;Uri </span>: <a href='{{manifest.annotations.package.uri }}' target=_other>{{manifest.annotations.package.uri }}</a></br>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+<p><h2>Deployment Details:</h2>
+<table border='1px solid #A9A9A9' style='width:100%;'><tr><th id=\"name\">Activities</th><th id=\"commands\">Actions</th><th id=\"rc\">Steps</th></tr>
+{%for activity in deployment.activities -%}
+<tr>
+<td>
+{{ activity.name }}
+</td>
+<td>
+{%for action in activity.actions -%}
+{{ action.name }}
+</td>
+<td>
+<table border='1px solid #A9A9A9' style='width:100%;'><tr><th id=\"name\">Steps</th><th id=\"commands\">Artifacts</th><th id=\"rc\">Status</th></tr>
+{%for step in action.steps -%}
+<tr>
+<td style='width:200px;'>
+{{ step.name }}
+</td>
+<td style='width:200px;'>
+{%for artifact in step.artifacts -%}
+{{ artifact.name }}{%for property in artifact.properties -%}{% if 'type' in property.key %}.{{  property.value }}<br>{% endif %}{% endfor %}{% endfor %}
+</td>
+<td>
+<b>Status: </b>
+{% if 'Ok' in step.step_result.status %}
+<span class='vlabel_ok'>Success</span>
+{% elif 'Skipped' in step.step_result.status %}
+<span class='vlabel_skipped'>Skipped</span><br>
+{% else %}
+<span class='vlabel_ko'><b>Failed</b></span><br>
+{% endif %}
+<br><a id='showDep{{ deployment.metadata.annotations.deploy_timestamp }}{{ activity.name }}{{ action.name }}{{ step.name }}' class='bottomRight' href='javascript:onclick=toggle("dep{{ deployment.metadata.annotations.deploy_timestamp }}{{ activity.name }}{{ action.name }}{{ step.name }}","showDep{{ deployment.metadata.annotations.deploy_timestamp }}{{ activity.name }}{{ action.name }}{{ step.name }}")'>Show Log</a>
+<div id='dep{{ deployment.metadata.annotations.deploy_timestamp }}{{ activity.name }}{{ action.name }}{{ step.name }}' style='display:none' class='dep'>
+<br><b>Details:</b>
+{%for result in step.step_result.results -%}
+{% call render_result(result) %}{% endcall %}
+{% endfor %}
+</div>
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}
+</tr>
+</td>
+{% endfor %}
+</table>
+<p>&nbsp;</p>
+{% endfor %}
+
+</div></body></html>

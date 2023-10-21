@@ -1,0 +1,183 @@
+---
+apiVersion: deploy.ibm.com/v1
+kind: DeploymentMethod
+metadata:
+  name: "CICS"
+  version: "1.0.0"
+  description: |
+    This deployment method can be use for the deployment of an CICS application.
+  annotations:
+    deployVersion: "1.0.0"
+    
+#default_tags:
+#  - deploy_modules
+
+#default_skip_tags:
+#  - deploy_modules
+
+#default_plan_tags:
+#  - deploy_modules
+  
+#default_plan_skip_tags:
+#  - deploy_modules
+
+activities:
+  - name: PACKAGE
+    description: |
+      This activity handle the package
+    actions:
+        - name: PACKAGE
+          steps:
+          - name: PACKAGE
+    tags:
+    - package
+    
+  - name: DEPLOY_MODULES
+    description: |
+      This activity is dedicated to the deployment of the artifacts into the PDS 
+    actions:
+        - name: ADD
+          description: |
+            This action is applicable when we add new artifacts.
+          states:
+             - NEW
+             - UNDEFINED
+          properties:
+          - key: "my_action_prop"
+            value: "my_value"
+          steps:
+          - name: MEMBER_COPY
+            description: |
+              This step do the copy of artifacts into PDSs
+        - name: UPDATE
+          description: |
+            This action is applicable when we update artifacts
+          states:
+             - MODIFIED
+          properties:
+          - key: "my_action_prop"
+            value: "my_value"
+          steps:
+          - name: MEMBER_VALIDATE
+            description: |
+              This step check the checksum of the already installed modules
+            plan_tags:
+             - never
+          - name: MEMBER_ARCHIVE
+            description: |
+              This step do the backup of already installed artifacts into a backup PDS(s)
+          - name: MEMBER_COPY
+            description: |
+              This step do the copy of artifacts into targeted PDS(s)
+    types:
+      - name: 'DBRM'
+      - name: 'LOAD'
+      - name: 'CICSLOAD'
+      - name: 'MAPLOAD'
+      - name: 'JCL'
+    is_artifact: True
+    properties:
+      - key: "my_activity_prop"
+        value: "my_value"
+    tags:
+    - deploy_modules
+
+  - name: DB2
+    description: |
+      This activity is dedicated to DBRM bind modules
+    actions:
+        - name: UPDATE
+          description: |
+            This action is applicable when we update a DBRM modules
+          states:
+             - NEW
+             - MODIFIED
+             - UNDEFINED
+          steps:
+          - name: DB2_BIND_PACKAGE
+         #- name: DB2_BIND_PLAN
+    types:
+      - name: 'DBRM'
+    is_artifact: True
+    tags:
+    - db2
+        
+  - name: CICS
+    description: |
+       This activity is dedicated to CICS load modules
+    actions:
+        - name: ADD
+          states:
+             - NEW
+          steps:
+          - name: PROG_CREATE
+            properties:
+            - key: "template"
+              value: "cics_cmci_prog_create"
+        - name: UPDATE
+          states:
+             - MODIFIED
+             - UNDEFINED
+          steps:
+          - name: PROG_UPDATE
+            properties:
+            - key: "template"
+              value: "cics_cmci_prog_update"
+        - name: DELETE
+          states:
+             - DELETED
+          steps:
+          - name: PROG_DELETE
+            properties:
+            - key: "template"
+              value: "cics_cmci_prog_delete"
+    types:
+      - name: 'CICSLOAD'
+      - name: 'MAPLOAD'
+    is_artifact: True
+    tags:
+    - cics
+    
+  - name: DELETE_MODULES
+    description: |
+      This activity is dedicated to the deletion of the artifacts from the PDSs 
+    actions:
+        - name: DELETE
+          description: |
+            This action is applicable when we deleting artifacts
+          states:
+             - DELETED
+          steps:
+          - name: MEMBER_DELETE
+            description: |
+              This step do the deletion of artifacts 
+    types:
+      - name: 'DBRM'
+      - name: 'LOAD'
+      - name: 'CICSLOAD'
+      - name: 'MAPLOAD'
+      - name: 'JCL'
+    is_artifact: True
+    tags:
+    - delete_modules    
+
+  # Ray Lam testing 
+  - name: "Job Submit Activity"
+    description: |
+      This activity will submit JOBs in the package 
+    actions:
+        - name: "Job Submit Action"
+          states:
+             - NEW
+             - MODIFIED
+             - UNDEFINED
+          steps:
+          - name: "Submit JCL"
+            properties:
+            - key: template
+              value: my_job_submit
+    types:
+      - name: 'JCL'
+    is_artifact: True
+    tags:
+    - jcl  
