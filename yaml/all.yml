@@ -1,0 +1,153 @@
+################################################################################
+# Enviroment variables for all z/OS managed nodes (target) that do not need
+# further configuration.
+################################################################################
+environment_vars:
+  _BPXK_AUTOCVT: "ON"
+  ZOAU_HOME: "{{ ZOAU }}"
+  #PYTHONPATH: "{{ ZOAU }}/lib"
+  #PYTHONSTDINENCODING: "cp1047"
+  LIBPATH: "{{ ZOAU }}/lib:{{ PYZ }}/lib:/lib:/usr/lib:/lib"
+  PATH: "{{ ZOAU }}/bin:{{ PYZ }}/bin:/bin:/var/bin"
+  _CEE_RUNOPTS: "FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
+  _TAG_REDIR_ERR: "txt"
+  _TAG_REDIR_IN: "txt"
+  _TAG_REDIR_OUT: "txt"
+  LANG: "C"
+
+
+################################################################################
+# Description of the properties used in this configuration:
+# - Property `PYZ` is the python installation home path on the z/OS managed node (target),
+#    e.g, pyz: "/usr/lpp/IBM/cyp/v3r11/pyz"
+# - Property `ZOAU` is the ZOAU installation home on the z/OS managed node (target),
+#    e.g, zoau: "/usr/lpp/IBM/zoautil"
+# - property `ansible_python_interpreter` is the z/OS managed node (target) Python
+#    binary installation path, e.g, ansible_python_interpreter: "{{PYZ}}/bin/python3.8"
+#
+# Note, PYZ and ZOAU environment variables must be configured.
+################################################################################
+PYZ: "/usr/lpp/IBM/cyp/v3r11/pyz"
+ZOAU: "/usr/lpp/IBM/zoautil"
+
+################################################################################
+# Do not configure, variable substituion will correctly set the
+# variable`ansible_python_interpreter`
+################################################################################
+ansible_python_interpreter: "/u/user4/wazivenv/bin/python3"
+
+################################################################################
+# Description of the properties used in this configuration:
+################################################################################
+# - Property BPXK_AUTOCVT must be configured to "ON"; e.g., _BPXK_AUTOCVT: "ON"
+# - Property ZOAU_HOME is the ZOA Utilities install root path; e.g., ZOAU_HOME: "/usr/lpp/IBM/zoautil"
+# - Property PYTHONPATH is the ZOA Utilities Python library path; e.g., PYTHONPATH: "/usr/lpp/IBM/zoautil/lib"
+# - Property LIBPATH is both the path to the Python libraries on the target
+#   and the ZOA Utilities Python library path separated by semi-colons; e.g.,
+#   LIBPATH: "/usr/lpp/IBM/zoautil/lib/:/usr/lpp/IBM/cyp/v3r11/pyz/lib:/usr/lib:/lib:."
+# - Property PATH is the ZOA utilities BIN path and Python interpreter path, e.g.,
+#   PATH: "/usr/lpp/IBM/zoautil/bin:/usr/lpp/IBM/cyp/v3r11/pyz/bin:/bin"
+# - Property _CEE_RUNOPTS is the invocation Language Environment runtime
+#   options for programs and used by Python. e.g.,
+#   _CEE_RUNOPTS: "FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)"
+# - Properties __TAG_REDIR_ERR, _TAG_REDIR_IN, _TAG_REDIR_OUT are txt and used
+#   by the shell; e.g.,
+#      _TAG_REDIR_ERR: "txt"
+#      _TAG_REDIR_IN: "txt"
+#      _TAG_REDIR_OUT: "txt"
+# - Property LANG is the name of the default locale; value
+#   C specifies the POSIX locale; for example: ``LANG: "C"``.
+################################################################################
+
+# Deploy specific variables
+common_pds_load_spec:
+  type: LIBRARY
+  space_primary: 10
+  space_secondary: 20
+  space_type: CYL
+  record_format: U
+  record_length: 0
+
+common_pds_binary_spec:
+  type: LIBRARY
+  space_primary: 10
+  space_secondary: 20
+  space_type: CYL
+  record_format: FB
+  record_length: 80
+
+hlq: 'RLAM.GENWAZI.PROD'
+uss_root_folder: '/tmp/uss_root'
+
+default_package_jobcard: "BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID"
+default_plan_jobcard: "BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID"
+default_db2_user: "{{ansible_user}}"
+default_db2_action: "REPLACE"
+db2_sys_def:
+   sdsnload: DSN.V12R1M0.SDSNLOAD
+   subsys: DBC1
+   qualifier: GENADB0
+   package: GENASA1
+   plan: GENAONE
+   sqlid: "{{default_db2_user}}"
+   package_jobcard: "{{default_package_jobcard}}"
+   plan_jobcard: "{{default_plan_jobcard}}"
+   package_action: "{{default_db2_action}}"
+   plan_action: "{{default_db2_action}}"
+   package_job_max_rc: 4
+   plan_job_max_rc: 4
+   plan_pklist: '*.GENASA1.*'
+
+default_cics_cmci_action: 'PHASEIN'
+cics_sys_def:
+   cmci_host: "{{ ansible_host }}"
+   cmci_port: 1490
+#   cmci_cert:
+#   cmci_key:
+   cmci_user: "{{ansible_user}}"
+   cmci_password: "{{ansible_password if ansible_password is defined else None}}"
+   context: CICS01
+   scheme: http
+#   scope:
+   insecure: true
+   csd_group: GENASAP
+
+# types to manage
+default_types: 'types'
+types:
+  - type: 'load'
+    pds:
+      name: '{{ hlq }}.LOADLIB'
+      spec: "{{common_pds_load_spec}}"
+      backup: '{{ hlq }}.BACK.LOADLIB'
+    is_load: True
+  - type: 'dbrm'
+    pds:
+      name: '{{ hlq }}.DBRM'
+      spec: "{{common_pds_binary_spec}}"
+      backup: '{{ hlq }}.BACK.DBRM'
+    is_binary: True
+    db2_systems:
+    - "{{ db2_sys_def }}"
+  - type: 'cicsload'
+    pds:
+      name: '{{ hlq }}.LOADLIB'
+      spec: "{{common_pds_load_spec}}"
+      backup: '{{ hlq }}.BACK.LOADLIB'
+    is_load: True
+    cics_systems:
+    - "{{ cics_sys_def }}"
+  - type: 'mapload'
+    pds:
+      name: '{{ hlq }}.LOADLIB'
+      spec: "{{common_pds_load_spec}}"
+      backup: '{{ hlq }}.BACK.LOADLIB'
+    is_load: True
+    cics_systems:
+    - "{{ cics_sys_def }}"
+
+# Default folders and logging values
+wd_env:
+   uss_dir: "/tmp/wd_deploy/{{ansible_user|lower}}/{{inventory_hostname}}"
+   local_dir: "/tmp/wd_deploy/{{lookup('env','USER')|lower}}/{{inventory_hostname}}"
+wd_no_log_flag: "{{ wd_log | bool  if wd_log is defined  else False}}"
