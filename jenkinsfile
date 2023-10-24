@@ -4,7 +4,7 @@ def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'WaziZosAgent'
 
 // DBB Git repositories (For DBB 2.X)
 
-def zAppBuildGitRepo = 'http://MVPGitLabServer1.fyre.ibm.com/dbb310//dbb320/dbb-zappbuild.git'
+def zAppBuildGitRepo = 'http://MVPGitLabServer1.fyre.ibm.com/dbb310//dbb350/dbb-zappbuild.git'
 def zAppBuildGitBranch = 'main'
 def dbbGitRepo = 'http://MVPGitLabServer1.fyre.ibm.com/dbb310/dbb.git'
 def dbbGitBranch = 'main'
