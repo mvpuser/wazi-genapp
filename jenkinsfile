@@ -131,7 +131,7 @@ pipeline {
 
         // Two ways of creating .tar file 
         // 1. Use --addExtension to create .tar file     
-        // 2. Run wazideploy-samples/python/dbb/dbb_prepare_local_folder.py to create .tar file 
+        // 2. Run wazideploy-samples/python/dbb/dbb_prepare_local_folder.py with wazideploy-package to create .tar file.
         stage('DBB Package tar ') {
             steps {
                 script {
