@@ -327,8 +327,4 @@ text:"""artifact_repository:
             }
         }
     }
-
-
-
-
-
+  }
