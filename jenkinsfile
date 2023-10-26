@@ -378,9 +378,9 @@ text:"""artifact_repository:
             post {
                 always {
                     dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
-                        archiveArtifacts allowEmptyArchive: true,
-                                        artifacts: '**/deployment-report.html',
-                                        onlyIfSuccessful: false
+                    //   archiveArtifacts allowEmptyArchive: true,
+                    //                    artifacts: '**/deployment-report.html',
+                    //                    onlyIfSuccessful: false
                     }
                 }
             }
