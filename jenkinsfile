@@ -326,7 +326,8 @@ text:"""artifact_repository:
                 }
             }
         }
-        
+
+/*
         // wazideploy_evidence is not in GA yet
         stage('Deploy: Deployment Report') {
             steps {
@@ -383,6 +384,6 @@ text:"""artifact_repository:
                     }
                 }
             }
-        }
+        }  */
     }
 }
