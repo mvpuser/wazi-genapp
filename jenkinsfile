@@ -326,5 +326,63 @@ text:"""artifact_repository:
                 }
             }
         }
+
+        // wazideploy_evidence is not in GA yet
+        stage('Deploy: Deployment Report') {
+            steps {
+                script {
+                    if ( hasBuildFiles ) {
+                        rc = sh (returnStatus: true, script: '''#!/bin/sh
+                            if [ "$PYTHON_VIRTUAL_ENV_COMMAND" != "" ]
+                            then
+                               echo "Use a virtual env $PYTHON_VIRTUAL_ENV_COMMAND"
+                               . $PYTHON_VIRTUAL_ENV_COMMAND
+                               export PYTHON_INTERPRETER="python3"
+                            else
+                               export PATH=$PATH:$HOME/.local/bin
+                            fi
+                            # Index Evidences
+
+                            
+                            CMD="wazideploy_evidence\
+                                --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                                --dataFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/evidences\
+                                i"
+                            echo $CMD
+                            $CMD 
+                            if [ $? -ne 0 ]
+                            then
+                              exit $?
+                            fi
+                            # Query Index
+                            CMD="wazideploy_evidence\
+                              --indexFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/index\
+                              --template ${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/templates/full-report.yml\
+                              --output=${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/deployment-report.html\
+                              r\
+                              renderer=${WORKSPACE}/${APP_NAME}/wazideploy-samples/evidences/renderers/full-report.html"
+                            echo $CMD
+                            $CMD 
+                            if [ $? -ne 0 ]
+                            then
+                              exit $?
+                            fi
+                            chtag -r ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/deployment-report.html
+                      ''')
+                      if ( rc != 0 )
+                          error("Excecution Of Deployment Report Failed!!!")
+                     }
+                }
+            }
+            post {
+                always {
+                    dir("${WORKSPACE}/BUILD-${BUILD_NUMBER}") {
+                    //   archiveArtifacts allowEmptyArchive: true,
+                    //                    artifacts: '**/deployment-report.html',
+                    //                    onlyIfSuccessful: false
+                    }
+                }
+            }
+        }  
     }
   }
