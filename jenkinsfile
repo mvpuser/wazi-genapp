@@ -45,7 +45,7 @@ pipeline {
      parameters {
        string(defaultValue: "1.0.0", description: 'Realese Version.', name: 'RELEASE_VERSION')
        booleanParam(defaultValue: false, description: 'Display verbose output', name: 'VERBOSE')
-       choice(choices: ["--impactBuild", "--fullBuild", "--scan"], description: 'DBB Build Type.', name: 'DBB_BUILD_TYPE')
+       choice(choices: ["--impactBuild", "--fullBuild", "--scanSource"], description: 'DBB Build Type.', name: 'DBB_BUILD_TYPE')
     }
 
     options { skipDefaultCheckout(true) }
