@@ -8,6 +8,18 @@ metadata:
     This deployment method can be use for the deployment of an CICS application.
   annotations:
     deployVersion: "1.0.0"
+    
+#default_tags:
+#  - deploy_modules
+
+#default_skip_tags:
+#  - deploy_modules
+
+#default_plan_tags:
+#  - deploy_modules
+  
+#default_plan_skip_tags:
+#  - deploy_modules
 
 activities:
   - name: PACKAGE
@@ -19,7 +31,7 @@ activities:
           - name: PACKAGE
     tags:
     - package
-
+    
   - name: DEPLOY_MODULES
     description: |
       This activity is dedicated to the deployment of the artifacts into the PDS 
@@ -83,13 +95,13 @@ activities:
              - UNDEFINED
           steps:
           - name: DB2_BIND_PACKAGE
-          - name: DB2_BIND_PLAN
+         #- name: DB2_BIND_PLAN
     types:
       - name: 'DBRM'
     is_artifact: True
     tags:
     - db2
-
+        
   - name: CICS
     description: |
        This activity is dedicated to CICS load modules
@@ -125,7 +137,7 @@ activities:
     is_artifact: True
     tags:
     - cics
-
+    
   - name: DELETE_MODULES
     description: |
       This activity is dedicated to the deletion of the artifacts from the PDSs 
@@ -147,4 +159,4 @@ activities:
       - name: 'JCL'
     is_artifact: True
     tags:
-    - delete_modules
+    - delete_modules    
