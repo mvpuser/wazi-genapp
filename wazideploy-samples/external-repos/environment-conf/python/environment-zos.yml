@@ -10,9 +10,9 @@
 apiVersion: deploy.ibm.com/v1
 kind: Environment
 metadata:
-  name: "tivlp02.svl.ibm.com"
+  name: "tvt7111.svl.ibm.com"
   version: 1.0.0
-
+ 
 spec:
 
   default_cics_cmci_action: "NEWCOPY"
@@ -20,48 +20,48 @@ spec:
   cics_sys_def:
      cicsplex: "CICS01"
      cmci_url: "http://127.0.0.1:1490"
-     cmci_user: ""
-     cmci_password: ""
+     cmci_user: "RLAM"   # no racf in cics01 - no password check
+     cmci_password: "XYZ"
      csd_group: "GENASAP"
 
   default_db2_sdsnload: "DSN.V12R1M0.SDSNLOAD"
-  default_package_jobcard: "BINDPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID"
+  default_pkg_jobcard: "WAZIBPKG JOB 'WD-PKGBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID"
   default_plan_jobcard: |
-    BINDPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
+    WAZIBPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
     /* ---
-  default_db2_user: "{{ extra_vars.db2_user if extra_vars.db2_user is defined else 'JENKINS' }}"
+  default_db2_user: "{{ extra_vars.db2_user if extra_vars.db2_user is defined else 'RLAM' }}"
   default_db2_action: "REPLACE"
   db2_sys_def:
      package_maxrc: 4
      plan_maxrc: 4
      user: "{{ env.spec.default_db2_user }}"
-     package: GENASA1
-     plan: GENAONE
-     qualifier: GENADB0
+     package: WAZI_COLLECTION
+     plan: GENAONE1
+     qualifier: GENWAZI
      subsys: DBC1
-     package_jobcard: "{{env.spec.default_package_jobcard}}"
+     package_jobcard: "{{env.spec.default_pkg_jobcard}}"
      plan_jobcard: "{{env.spec.default_plan_jobcard}}"
      package_action: "{{env.spec.default_db2_action}}"
      plan_action: "{{env.spec.default_db2_action}}"
      sdsnload: "{{env.spec.default_db2_sdsnload}}"
-     plan_pklist: '*.GENASA1.*'
+     plan_pklist: '*.WAZI_COLLECTION.*'
 
   common_pds_load_spec:
      type: LIBRARY
-     primary_space: 10CYL
-     secondary_space: 20CYL
+     primary_space: 1CYL
+     secondary_space: 2CYL
      record_format: U
      record_length: 0
   common_pds_binary_spec:
      type: LIBRARY
-     primary_space: 10CYL
-     secondary_space: 20CYL
+     primary_space: 1CYL
+     secondary_space: 2CYL
      record_format: FB
      record_length: 80
   common_pds_txt_spec:
      type: LIBRARY
-     primary_space: 10CYL
-     secondary_space: 20CYL
+     primary_space: 1CYL
+     secondary_space: 2CYL
      record_format: FB
      record_length: 80
   seq_spec:
@@ -78,7 +78,7 @@ spec:
      record_format: FB
      record_length: 15
 
-  hlq: "{{ extra_vars.hlq if extra_vars.hlq is defined else 'NAZARE.WDEPLOY.PYTHON' }}"
+  hlq: "{{ extra_vars.hlq if extra_vars.hlq is defined else 'RLAM.GENWAZI.PROD' }}"
   uss_root: "{{ extra_vars.uss_root if extra_vars.uss_root is defined else '/tmp/uss_root' }}"
   types:
     - pattern: .*\.LOAD$
@@ -114,13 +114,6 @@ spec:
       #encoding:
       #  from: UTF-8
       #  to: IBM-1047
-      text_subs:
-      - pattern: "#SUB1"
-        replace: "01"
-      - pattern: "#SUB2"
-        replace: "02"
-      - pattern: "#SUB3"
-        replace: "03"
     - pattern: .*.BIN$
       directory: "{{ env.spec.uss_root }}/bin/"
       directory_backup: "{{ env.spec.uss_root }}/bin/back/"
