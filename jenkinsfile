@@ -1,6 +1,6 @@
 
 // Agent labels
-def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'WaziZosAgent'
+def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'RayZosAgent'
 
 // DBB Git repositories (For DBB 2.X)
 
