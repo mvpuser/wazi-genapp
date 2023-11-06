@@ -257,7 +257,7 @@ text:"""artifact_repository:
                             BUILD_OUTPUT_FOLDER=$(ls ${WORKSPACE}/BUILD-${BUILD_NUMBER} | grep "build.*[0-9]$" | tail -n 1)
                             cd ${WORKSPACE}
                             CMD="wazideploy-generate\
-                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/deployment-method/deployment-method.yml\
+                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/yaml/deployment-method.yml\
                                    --deploymentPlan  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
                                    --deploymentPlanReport ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan-report.html\
                                    --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml\
@@ -299,7 +299,7 @@ text:"""artifact_repository:
                             CMD="wazideploy-deploy\
                                 --deploymentPlan  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
                                 --packageInputFile  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/${APP_NAME}.${BUILD_OUTPUT_FOLDER}.tar\
-                                --envFile   ${WORKSPACE}/${APP_NAME}/wazideploy-samples/external-repos/environment-conf/python/environment-zos.yml\
+                                --envFile   ${WORKSPACE}/${APP_NAME}/yaml/environment-zos.yml\
                                 --evidencesFileName ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deploy/evidences/evidence.yml\
                                 --workingFolder ${WORKSPACE}/BUILD-${BUILD_NUMBER}/"
                             echo $CMD
