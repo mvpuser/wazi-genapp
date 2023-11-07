@@ -39,13 +39,13 @@ pipeline {
         ARTIFACTORY_REPO = "${env.ARTIFACTORY_REPO  ? env.ARTIFACTORY_REPO : 'hyc-mvp-team-maven-local/wazideploy'}"
         ARTIFACTORY_REPO_PATH = "${env.ARTIFACTORY_REPO_PATH ? env.ARTIFACTORY_REPO_PATH : 'wazideploy'}"
         ARTIFACTORY_STATIC_BUILD_NAME = "${env.ARTIFACTORY_STATIC_BUILD_NAME ? env.ARTIFACTORY_STATIC_BUILD_NAME : 'hyc-mvp-team/RayLamGenApp'}"
-        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : '/u/rlam/wazivenv/bin/activate'}"
+        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : '/u/user4/wazivenv/bin/activate'}"
      }
      
      parameters {
        string(defaultValue: "1.0.0", description: 'Realese Version.', name: 'RELEASE_VERSION')
        booleanParam(defaultValue: false, description: 'Display verbose output', name: 'VERBOSE')
-       choice(choices: ["--impactBuild", "--fullBuild", "--scan"], description: 'DBB Build Type.', name: 'DBB_BUILD_TYPE')
+       choice(choices: ["--impactBuild", "--fullBuild", "--scanSource"], description: 'DBB Build Type.', name: 'DBB_BUILD_TYPE')
     }
 
     options { skipDefaultCheckout(true) }
