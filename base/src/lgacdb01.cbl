@@ -8,7 +8,7 @@
       *   To add customer's name, address and date of birth to the     *
       *  DB2 customer table creating a new customer entry.             *
       *                                                                *
-      *  Ray Lam 11/07/2023 zfs mounted
+      *  Ray Lam 11/07/2023 zoau
       ******************************************************************
        IDENTIFICATION DIVISION.
        PROGRAM-ID. LGACDB01.
