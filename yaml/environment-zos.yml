@@ -19,7 +19,7 @@ spec:
 
   cics_sys_def:
      cicsplex: "CICS01"
-     cmci_url: "http://127.0.0.1:1490"
+     cmci_url: "http://tvt7111.svl.ibm.com:1490"
      cmci_user: "RLAM"   # no racf in cics01 - no password check
      cmci_password: "XYZ"
      csd_group: "GENASAP"
