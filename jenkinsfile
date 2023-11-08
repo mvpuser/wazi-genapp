@@ -257,7 +257,7 @@ text:"""artifact_repository:
                             BUILD_OUTPUT_FOLDER=$(ls ${WORKSPACE}/BUILD-${BUILD_NUMBER} | grep "build.*[0-9]$" | tail -n 1)
                             cd ${WORKSPACE}
                             CMD="wazideploy-generate\
-                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/deployment-method.yml\
+                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/yaml/deployment-method.yml\
                                    --deploymentPlan  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
                                    --deploymentPlanReport ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan-report.html\
                                    --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml\
