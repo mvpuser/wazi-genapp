@@ -28,8 +28,8 @@ pipeline {
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
         DBB_HOME = "${env.DBB_HOME ? env.DBB_HOME : '/var/dbb'}"
         DBB_URL = "${env.DBB_URL ? env.DBB_URL : 'jdbc:db2://tvt7111.svl.ibm.com:5050/DBC1'}"
-        DBB_HLQ = "${env.DBB_HLQ ? env.DBB_HLQ : 'RLAM'}"
-        DBB_CRED = "${env.DBB_CRED ? env.DBB_CRED : '-id RLAM -pf /var/dbb/conf/rlam.txt'}"    
+        DBB_HLQ = "${env.DBB_HLQ ? env.DBB_HLQ : 'USER4'}"
+        DBB_CRED = "${env.DBB_CRED ? env.DBB_CRED : '-id USER4 -pf /var/dbb/conf/user4.txt'}"    
         GROOVYZ_BUILD_EXTRA_OPTS = "${env.GROOVYZ_BUILD_EXTRA_OPTS ? env.GROOVYZ_BUILD_EXTRA_OPTS : '-DBB_PERSONAL_DAEMON'}"
         DBB_BUILD_EXTRA_OPTS = "${env.DBB_BUILD_EXTRA_OPTS ? env.DBB_BUILD_EXTRA_OPTS : ''}"
         PYTHON_INTERPRETER = "${env.PYTHON_INTERPRETER ? env.PYTHON_INTERPRETER : '/usr/lpp/IBM/cyp/v3r11/pyz/bin/python3'}"
@@ -102,7 +102,7 @@ pipeline {
                     rc = sh (returnStatus: true, script: '''#!/bin/sh
                             CMD="$DBB_HOME/bin/groovyz $GROOVYZ_BUILD_EXTRA_OPTS\
                                 ${WORKSPACE}/dbb-zappbuild/build.groovy --logEncoding UTF-8 -w ${WORKSPACE}\
-                                --workDir ${WORKSPACE}/BUILD-${BUILD_NUMBER} --hlq ${DBB_HLQ} --url ${DBB_URL}\
+                                --workDir ${WORKSPACE}/BUILD-${BUILD_NUMBER} --hlq ${DBB_HLQ}.GENWAZI --url ${DBB_URL}\
                                 ${DBB_CRED} -d ${DBB_BUILD_TYPE} ${BUILD_VERBOSE} ${DBB_BUILD_EXTRA_OPTS}\
                                 --application ${APP_NAME} --sourceDir ${WORKSPACE}"
                             echo $CMD
