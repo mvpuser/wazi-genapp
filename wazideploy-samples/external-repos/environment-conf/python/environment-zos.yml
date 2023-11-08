@@ -20,7 +20,7 @@ spec:
   cics_sys_def:
      cicsplex: "CICS01"
      cmci_url: "http://127.0.0.1:1490"
-     cmci_user: "RLAM"   # no racf in cics01 - no password check
+     cmci_user: "USER4"   # no racf in cics01 - no password check
      cmci_password: "XYZ"
      csd_group: "GENASAP"
 
@@ -29,7 +29,7 @@ spec:
   default_plan_jobcard: |
     WAZIBPLA JOB 'WD-PLANBIND',MSGLEVEL=(1,1),MSGCLASS=R,NOTIFY=&SYSUID
     /* ---
-  default_db2_user: "{{ extra_vars.db2_user if extra_vars.db2_user is defined else 'RLAM' }}"
+  default_db2_user: "{{ extra_vars.db2_user if extra_vars.db2_user is defined else 'USER4' }}"
   default_db2_action: "REPLACE"
   db2_sys_def:
      package_maxrc: 4
@@ -78,7 +78,7 @@ spec:
      record_format: FB
      record_length: 15
 
-  hlq: "{{ extra_vars.hlq if extra_vars.hlq is defined else 'RLAM.GENWAZI.PROD' }}"
+  hlq: "{{ extra_vars.hlq if extra_vars.hlq is defined else 'USER4.GENWAZI.PROD' }}"
   uss_root: "{{ extra_vars.uss_root if extra_vars.uss_root is defined else '/tmp/uss_root' }}"
   types:
     - pattern: .*\.LOAD$
