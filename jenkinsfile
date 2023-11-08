@@ -1,6 +1,6 @@
 
 // Agent labels
-def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'RayZosAgent'
+def zOsAgentLabel = env.ZOS_AGENT_LABEL ? env.ZOS_AGENT_LABEL : 'WaziZosAgent'
 
 // DBB Git repositories (For DBB 2.X)
 
@@ -39,7 +39,7 @@ pipeline {
         ARTIFACTORY_REPO = "${env.ARTIFACTORY_REPO  ? env.ARTIFACTORY_REPO : 'hyc-mvp-team-maven-local/wazideploy'}"
         ARTIFACTORY_REPO_PATH = "${env.ARTIFACTORY_REPO_PATH ? env.ARTIFACTORY_REPO_PATH : 'wazideploy'}"
         ARTIFACTORY_STATIC_BUILD_NAME = "${env.ARTIFACTORY_STATIC_BUILD_NAME ? env.ARTIFACTORY_STATIC_BUILD_NAME : 'hyc-mvp-team/RayLamGenApp'}"
-        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : '/u/rlam/gdp/bin/activate'}"
+        PYTHON_VIRTUAL_ENV_COMMAND = "${env.PYTHON_VIRTUAL_ENV_COMMAND ? env.PYTHON_VIRTUAL_ENV_COMMAND : '/u/user4/wazivenv/bin/activate'}"
      }
      
      parameters {
@@ -257,7 +257,7 @@ text:"""artifact_repository:
                             BUILD_OUTPUT_FOLDER=$(ls ${WORKSPACE}/BUILD-${BUILD_NUMBER} | grep "build.*[0-9]$" | tail -n 1)
                             cd ${WORKSPACE}
                             CMD="wazideploy-generate\
-                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/yaml/deployment-method.yml\
+                                   --deploymentMethod  ${WORKSPACE}/${APP_NAME}/deployment-method.yml\
                                    --deploymentPlan  ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan.yml\
                                    --deploymentPlanReport ${WORKSPACE}/BUILD-${BUILD_NUMBER}/deployment-plan-report.html\
                                    --configFile ${WORKSPACE}/BUILD-${BUILD_NUMBER}/config.yml\
