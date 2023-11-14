@@ -8,7 +8,7 @@ metadata:
     This deployment method can be use for the deployment of an CICS application.
   annotations:
     deployVersion: "1.0.0"
-    
+     
 #default_tags:
 #  - deploy_modules
 
