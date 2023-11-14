@@ -8,7 +8,7 @@
       *   To add customer's name, address and date of birth to the     *
       *  DB2 customer table creating a new customer entry.             *
       *                                                                *
-      *  USER4 11/14/2023 1
+      *  USER4 11/14/2023 1,2
       ******************************************************************
        IDENTIFICATION DIVISION.
        PROGRAM-ID. LGACDB01.
