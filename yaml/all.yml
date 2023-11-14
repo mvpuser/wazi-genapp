@@ -1,6 +1,6 @@
 ################################################################################
 # Enviroment variables for all z/OS managed nodes (target) that do not need
-# further configuration.
+# further configuration. 
 ################################################################################
 environment_vars:
   _BPXK_AUTOCVT: "ON"
